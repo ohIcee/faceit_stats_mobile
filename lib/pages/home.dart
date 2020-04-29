@@ -1,3 +1,4 @@
+import 'package:faceit_stats/helpers/RemoteConfigManager.dart';
 import 'package:flutter/material.dart';
 
 import 'package:faceit_stats/api/PlayerSearch.dart';
@@ -17,10 +18,23 @@ class _HomePageState extends State<HomePage> {
 
   final userSearchInputController = TextEditingController();
 
+  var isLoaded = false;
+
+  @override
+  void initState() {
+    LoadApp();
+    super.initState();
+  }
+
   @override
   void dispose() {
     userSearchInputController.dispose();
     super.dispose();
+  }
+
+  void LoadApp() async {
+    await RemoteConfigManager.Init();
+    isLoaded = true;
   }
 
   @override
@@ -59,7 +73,7 @@ class _HomePageState extends State<HomePage> {
                 child: Text(
                   "Search",
                 ),
-                onPressed: () => SearchUser(),
+                onPressed: isLoaded ? SearchUser : null,
               ),
             ),
           ],
@@ -71,7 +85,6 @@ class _HomePageState extends State<HomePage> {
   Future<void> SearchUser() async {
     print("Searching user " + userSearchInputController.text);
     var username = userSearchInputController.text;
-    username="IceeCold";
     User user = await PlayerSearch.GetUserGameDetails(username, "csgo");
     Navigator.pushNamed(context, '/userDetails', arguments: user);
   }

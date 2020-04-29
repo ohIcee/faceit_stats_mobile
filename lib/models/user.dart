@@ -1,3 +1,4 @@
+import 'package:faceit_stats/models/CsgoDetails.dart';
 import 'package:faceit_stats/models/GameDetails.dart';
 
 class User {
@@ -6,7 +7,8 @@ class User {
   final String avatarImgLink;
   final String country;
   final String coverImgLink;
-  final List<GameDetails> games = <GameDetails>[];
+  // ignore: non_constant_identifier_names
+  CsgoDetails CSGODetails;
 
   User({
     this.userID,
@@ -16,8 +18,8 @@ class User {
     this.coverImgLink
   });
 
-  void addGameDetails(GameDetails details) => games.add(details);
-  GameDetails getGameDetails(String game) => games.firstWhere((x) => x.game == "csgo");
+  void setCsgoDetails(CsgoDetails details) => CSGODetails = details;
+  CsgoDetails getCsgoDetails() => CSGODetails;
 
   factory User.fromJson (Map<String, dynamic> parsedJSON) {
     return User(

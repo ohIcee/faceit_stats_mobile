@@ -1,5 +1,4 @@
 class GameDetails {
-  final String game;
   // ignore: non_constant_identifier_names
   final String game_profile_id;
   final String region;
@@ -14,8 +13,7 @@ class GameDetails {
   // ignore: non_constant_identifier_names
   final String game_player_name;
 
-  GameDetails({
-      this.game,
+  GameDetails(
       // ignore: non_constant_identifier_names
       this.game_profile_id,
       this.region,
@@ -28,18 +26,18 @@ class GameDetails {
       // ignore: non_constant_identifier_names
       this.faceit_elo,
       // ignore: non_constant_identifier_names
-      this.game_player_name});
+      this.game_player_name);
 
-  factory GameDetails.fromJson (Map<String, dynamic> parsedJSON, String game) {
-    return GameDetails(
-      game: game,
-      game_profile_id: parsedJSON["game_profile_id"],
-      region: parsedJSON["region"],
-      skill_level_label: parsedJSON["skill_level_label"],
-      game_player_id: parsedJSON["game_player_id"],
-      skill_level: parsedJSON["skill_level"],
-      faceit_elo: parsedJSON["faceit_elo"],
-      game_player_name: parsedJSON["game_player_name"]
-    );
-  }
+//  factory GameDetails.fromJson (Map<String, dynamic> parsedJSON, String game) {
+//    return GameDetails(
+//      game: game,
+//      game_profile_id: parsedJSON["game_profile_id"],
+//      region: parsedJSON["region"],
+//      skill_level_label: parsedJSON["skill_level_label"],
+//      game_player_id: parsedJSON["game_player_id"],
+//      skill_level: parsedJSON["skill_level"],
+//      faceit_elo: parsedJSON["faceit_elo"],
+//      game_player_name: parsedJSON["game_player_name"]
+//    );
+//  }
 }
