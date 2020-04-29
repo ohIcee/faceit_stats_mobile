@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
 import 'package:faceit_stats/api/PlayerSearch.dart';
 import 'package:faceit_stats/models/user.dart';
 
 class HomePage extends StatefulWidget {
+  static const routeName = '/';
+
   HomePage({Key key, this.title}) : super(key: key);
   final String title;
 
@@ -13,6 +14,7 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+
   final userSearchInputController = TextEditingController();
 
   @override
@@ -71,7 +73,7 @@ class _HomePageState extends State<HomePage> {
     var username = userSearchInputController.text;
     username="IceeCold";
     User user = await PlayerSearch.GetUserGameDetails(username, "csgo");
-    Navigator.pushNamed(context, '/userDetails');
+    Navigator.pushNamed(context, '/userDetails', arguments: user);
   }
 
   Widget appBar() {

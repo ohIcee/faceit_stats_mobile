@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:faceit_stats/models/GameDetails.dart';
 import 'package:http/http.dart' as http;
 
 import 'package:faceit_stats/helpers/RemoteConfigManager.dart';
@@ -19,7 +20,16 @@ class PlayerSearch {
       HttpHeaders.contentTypeHeader: "application/json",
     });
 
-    var _user = User.fromJson(jsonDecode(response.body));
+    var decodedJSON = jsonDecode(response.body);
+    var _user = User.fromJson(decodedJSON);
+    var _games = decodedJSON["games"];
+
+    var csgoDetails = GameDetails.fromJson(_games["csgo"], "csgo");
+    var battalionDetails = GameDetails.fromJson(_games["battalion"], "battalion");
+
+    _user.addGameDetails( csgoDetails );
+    _user.addGameDetails( battalionDetails );
+
     return _user;
   }
 

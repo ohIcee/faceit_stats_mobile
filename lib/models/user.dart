@@ -1,6 +1,4 @@
-import 'dart:convert';
-
-import 'package:flutter/cupertino.dart';
+import 'package:faceit_stats/models/GameDetails.dart';
 
 class User {
   final String userID;
@@ -8,14 +6,18 @@ class User {
   final String avatarImgLink;
   final String country;
   final String coverImgLink;
+  final List<GameDetails> games = <GameDetails>[];
 
   User({
-    @required this.userID,
-    @required this.nickname,
-    @required this.avatarImgLink,
-    @required this.country,
-    @required this.coverImgLink
+    this.userID,
+    this.nickname,
+    this.avatarImgLink,
+    this.country,
+    this.coverImgLink
   });
+
+  void addGameDetails(GameDetails details) => games.add(details);
+  GameDetails getGameDetails(String game) => games.firstWhere((x) => x.game == "csgo");
 
   factory User.fromJson (Map<String, dynamic> parsedJSON) {
     return User(
@@ -26,16 +28,4 @@ class User {
         coverImgLink: parsedJSON["cover_image"]
     );
   }
-
-//  static User createUserFromJSON(String JSON) {
-//    var user = jsonDecode(JSON);
-//
-//    return User(
-//      userID: user["player_id"],
-//      nickname: user["nickname"],
-//      avatarImgLink: user["avatar"],
-//      country: user["country"],
-//      coverImgLink: user["cover_image"]
-//    );
-//  }
 }
