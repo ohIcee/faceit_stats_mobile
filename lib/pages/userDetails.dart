@@ -34,10 +34,24 @@ class _UserDetailPageState extends State<UserDetailPage> {
       body: SafeArea(
         child: Column(
           children: <Widget>[
+            SizedBox(
+              height: 20.0,
+            ),
             //appBar(),
             topInfo(),
-            SizedBox(
-              height: 40.0,
+            Container(
+              width: double.infinity,
+              padding: EdgeInsets.symmetric(
+                horizontal: 40.0,
+              ),
+              child: RaisedButton(
+                child: Text("More info"),
+                onPressed: () {},
+                color: Colors.transparent,
+                elevation: 0,
+                focusElevation: 0,
+                highlightElevation: 0,
+              ),
             ),
             csgoInfo(),
           ],
@@ -173,43 +187,114 @@ class _UserDetailPageState extends State<UserDetailPage> {
   }
 
   Widget topInfo() {
+    var rank = _user.getCsgoDetails().skill_level;
+    rank = 8;
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: <Widget>[
-        ClipOval(
-          child: Image.network(
-            _user.avatarImgLink,
-            height: 125.0,
-            width: 125.0,
-            fit: BoxFit.fill,
+        Expanded(
+          child: Container(
+            margin: EdgeInsets.only(
+              left: 40.0,
+            ),
+            child: Column(
+              children: <Widget>[
+                ClipOval(
+                  child: Image.network(
+                    _user.avatarImgLink,
+                    height: 110.0,
+                    width: 110.0,
+                    fit: BoxFit.fill,
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
         SizedBox(
           width: 40.0,
         ),
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Text(
-              _user.nickname,
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 20.0,
-              ),
+        Expanded(
+          child: Container(
+            margin: EdgeInsets.only(
+              right: 40.0,
             ),
-            SizedBox(
-              height: 10.0,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                Text(
+                  _user.nickname,
+                  style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold),
+                ),
+                SizedBox(
+                  height: 15.0,
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: <Widget>[
+                    Text("country"),
+                    SizedBox(
+                      width: 10.0,
+                    ),
+                    Container(
+                      decoration: BoxDecoration(
+                        color: Colors.black54,
+                      ),
+                      width: 40.0,
+                      padding:
+                          EdgeInsets.symmetric(vertical: 5.0, horizontal: 10.0),
+                      child: Text(
+                        _user.country,
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                  ],
+                ),
+                SizedBox(
+                  height: 5.0,
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: <Widget>[
+                    Text("rank"),
+                    Container(
+                      width: 40.0,
+                      decoration: BoxDecoration(
+                          color:
+                              getRankColor(rank)),
+                      padding:
+                          EdgeInsets.symmetric(vertical: 5.0, horizontal: 10.0),
+                      child: Text(
+                        rank.toString(),
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          color: Colors.black,
+                          fontWeight: FontWeight.bold
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
             ),
-            Image.asset(
-              'icons/flags/png/${_user.country}.png',
-              package: 'country_icons',
-              scale: 2,
-            ),
-          ],
+          ),
         ),
       ],
     );
+  }
+
+  Color getRankColor(int rank) {
+    if (rank == 1)
+      return Colors.white70;
+    else if (rank == 2 || rank == 3)
+      return Colors.green;
+    else if (rank >= 4 && rank <= 7)
+      return Colors.yellow;
+    else if (rank == 8 || rank == 9)
+      return Colors.deepOrange;
+    else if (rank == 10) return Colors.red;
+    return null;
   }
 
   Widget appBar() {
