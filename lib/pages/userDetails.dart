@@ -39,19 +39,22 @@ class _UserDetailPageState extends State<UserDetailPage> {
             ),
             //appBar(),
             topInfo(),
-            Container(
-              width: double.infinity,
-              padding: EdgeInsets.symmetric(
-                horizontal: 40.0,
-              ),
-              child: RaisedButton(
-                child: Text("More info"),
-                onPressed: () {},
-                color: Colors.transparent,
-                elevation: 0,
-                focusElevation: 0,
-                highlightElevation: 0,
-              ),
+//            Container(
+//              width: double.infinity,
+//              padding: EdgeInsets.symmetric(
+//                horizontal: 40.0,
+//              ),
+//              child: RaisedButton(
+//                child: Text("More info"),
+//                onPressed: () {},
+//                color: Colors.transparent,
+//                elevation: 0,
+//                focusElevation: 0,
+//                highlightElevation: 0,
+//              ),
+//            ),
+            SizedBox(
+              height: 20.0,
             ),
             csgoInfo(),
           ],
@@ -146,41 +149,49 @@ class _UserDetailPageState extends State<UserDetailPage> {
   }
 
   Widget stat(String stat, String category) {
-    return Container(
-      height: 100.0,
-      decoration: BoxDecoration(
-        color: Colors.black38,
+    return Card(
+      margin: EdgeInsets.only(
+        right: 15.0,
+      ),
+      shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.all(
           Radius.circular(10.0),
         ),
       ),
-      margin: EdgeInsets.only(
-        right: 20.0,
-      ),
-      padding: EdgeInsets.symmetric(
-        horizontal: 20.0,
-      ),
-      child: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Text(
-              stat,
-              style: TextStyle(
-                fontWeight: FontWeight.w700,
-                fontSize: 18.0,
+      elevation: 15.0,
+      child: Container(
+        height: 100.0,
+        decoration: BoxDecoration(
+          color: Colors.deepOrange.withOpacity(.9),
+          borderRadius: BorderRadius.all(
+            Radius.circular(10.0),
+          ),
+        ),
+        padding: EdgeInsets.symmetric(
+          horizontal: 20.0,
+        ),
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              Text(
+                stat,
+                style: TextStyle(
+                  fontWeight: FontWeight.w700,
+                  fontSize: 18.0,
+                ),
               ),
-            ),
-            SizedBox(
-              height: 3.0,
-            ),
-            Text(
-              category.toUpperCase(),
-              style: TextStyle(
-                fontSize: 14.0,
+              SizedBox(
+                height: 3.0,
               ),
-            ),
-          ],
+              Text(
+                category.toUpperCase(),
+                style: TextStyle(
+                  fontSize: 14.0,
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -260,18 +271,14 @@ class _UserDetailPageState extends State<UserDetailPage> {
                     Text("rank"),
                     Container(
                       width: 40.0,
-                      decoration: BoxDecoration(
-                          color:
-                              getRankColor(rank)),
+                      decoration: BoxDecoration(color: getRankColor(rank)),
                       padding:
                           EdgeInsets.symmetric(vertical: 5.0, horizontal: 10.0),
                       child: Text(
                         rank.toString(),
                         textAlign: TextAlign.center,
                         style: TextStyle(
-                          color: Colors.black,
-                          fontWeight: FontWeight.bold
-                        ),
+                            color: Colors.black, fontWeight: FontWeight.bold),
                       ),
                     ),
                   ],
