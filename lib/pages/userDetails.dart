@@ -25,6 +25,15 @@ class _UserDetailPageState extends State<UserDetailPage> {
   Widget build(BuildContext context) {
     _user = ModalRoute.of(context).settings.arguments;
 
+    var csgoDetails = _user.getCsgoDetails();
+    var stats = <Widget>[
+      stat(csgoDetails.match_count, "Matches"),
+      stat(csgoDetails.win_rate, "Win rate %"),
+      stat(csgoDetails.longest_win_streak, "Longest Win Streak"),
+      stat(csgoDetails.average_kd, "Average K/D Ratio"),
+      stat(csgoDetails.avg_headshot, "Average Headshots %"),
+    ];
+
     return Scaffold(
       appBar: AppBar(
         title: Text("Faceit Stats"),
@@ -56,7 +65,28 @@ class _UserDetailPageState extends State<UserDetailPage> {
             SizedBox(
               height: 20.0,
             ),
-            csgoInfo(),
+            recentResults(_user.getCsgoDetails().recent_results),
+            SizedBox(
+              height: 20.0,
+            ),
+
+            Expanded(
+              child: GridView.count(
+                physics: BouncingScrollPhysics(),
+                // Create a grid with 2 columns. If you change the scrollDirection to
+                // horizontal, this produces 2 rows.
+                crossAxisCount: 2,
+                // Generate 100 widgets that display their index in the List.
+                children: List.generate(100, (index) {
+                  return Center(
+                    child: Text(
+                      'Item $index',
+                      style: Theme.of(context).textTheme.headline,
+                    ),
+                  );
+                }),
+              ),
+            ),
           ],
         ),
       ),
@@ -274,12 +304,13 @@ class _UserDetailPageState extends State<UserDetailPage> {
                       decoration: BoxDecoration(color: getRankColor(rank)),
                       padding:
                           EdgeInsets.symmetric(vertical: 5.0, horizontal: 10.0),
-                      child: Text(
-                        rank.toString(),
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                            color: Colors.black, fontWeight: FontWeight.bold),
-                      ),
+                      child: Image.asset('skill_level_1_svg.png'),
+//                      child: Text(
+//                        rank.toString(),
+//                        textAlign: TextAlign.center,
+//                        style: TextStyle(
+//                            color: Colors.black, fontWeight: FontWeight.bold),
+//                      ),
                     ),
                   ],
                 ),
