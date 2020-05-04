@@ -23,6 +23,7 @@ class _AppState extends State<MyApp> {
         textTheme: GoogleFonts.playTextTheme(
           Theme.of(context).textTheme.apply(bodyColor: Colors.white),
         ),
+        backgroundColor: Color.fromRGBO(35, 37, 37, 1),
       ),
       initialRoute: '/',
       routes: {

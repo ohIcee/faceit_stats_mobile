@@ -34,7 +34,9 @@ class _HomePageState extends State<HomePage> {
 
   void LoadApp() async {
     await RemoteConfigManager.Init();
-    isLoaded = true;
+    setState(() {
+      isLoaded = true;
+    });
   }
 
   @override
