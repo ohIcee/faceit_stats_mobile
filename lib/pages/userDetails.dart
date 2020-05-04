@@ -87,16 +87,40 @@ class _UserDetailPageState extends State<UserDetailPage>
                     height: 20.0,
                   ),
             recentResults(_user.getCsgoDetails().recent_results),
-            SizedBox(
-              height: 20.0,
-            ),
-            csgoInfo(),
+            !isSecondPage
+                ? SizedBox(
+                    height: 20.0,
+                  )
+                : Container(),
+            !isSecondPage ? csgoInfo() : Container(),
             isSecondPage
-                ? IconButton(
-                    icon: Icon(Icons.refresh),
-                    onPressed: () {
-                      ToFirstPage();
-                    },
+                ? Container(
+                    margin: EdgeInsets.symmetric(
+                      horizontal: 40.0,
+                      vertical: 10.0,
+                    ),
+                    width: 170.0,
+                    child: RaisedButton(
+                      elevation: 0.0,
+                      onPressed: () {
+                        ToFirstPage();
+                      },
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: <Widget>[
+                          Icon(
+                            Icons.list,
+                          ),
+                          SizedBox(
+                            width: 5.0,
+                          ),
+                          Text(
+                            "Player Stats",
+                            style: TextStyle(),
+                          ),
+                        ],
+                      ),
+                    ),
                   )
                 : Container(),
             !isSecondPage
@@ -107,7 +131,6 @@ class _UserDetailPageState extends State<UserDetailPage>
                     ),
                     width: 170.0,
                     child: RaisedButton(
-                      color: Colors.transparent,
                       elevation: 0.0,
                       onPressed: () {
                         ToSecondPage();
@@ -128,6 +151,11 @@ class _UserDetailPageState extends State<UserDetailPage>
                         ],
                       ),
                     ),
+                  )
+                : Container(),
+            isSecondPage
+                ? Container(
+                    child: Text("Loading matches..."),
                   )
                 : Container(),
           ],
@@ -240,7 +268,7 @@ class _UserDetailPageState extends State<UserDetailPage>
 
   Widget topInfo() {
     return AnimatedContainer(
-      duration: Duration(milliseconds: 500),
+      duration: Duration(milliseconds: 1000),
       height: coverImageHeight,
       curve: Curves.easeOutCubic,
       child: Stack(
@@ -248,7 +276,7 @@ class _UserDetailPageState extends State<UserDetailPage>
           SizedBox(
             height: double.infinity,
             child: AnimatedOpacity(
-              duration: Duration(milliseconds: 500),
+              duration: Duration(milliseconds: 700),
               curve: Curves.easeOutCubic,
               child: Image.network(_user.coverImgLink, fit: BoxFit.cover),
               opacity: coverImageOpacity,
