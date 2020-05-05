@@ -1,4 +1,7 @@
+import 'package:faceit_stats/api/MatchHistory.dart';
+import 'package:faceit_stats/models/Match.dart';
 import 'package:faceit_stats/models/CsgoDetails.dart';
+import 'package:faceit_stats/models/userDetailArguments.dart';
 import 'package:flutter/material.dart';
 
 import '../models/user.dart';
@@ -16,6 +19,7 @@ class UserDetailPage extends StatefulWidget {
 class _UserDetailPageState extends State<UserDetailPage>
     with TickerProviderStateMixin {
   User _user;
+  List<Match> _userMatchHistory;
 
   double coverImageHeight = 200.0;
   double avatarImageSize = 150.0;
@@ -23,6 +27,7 @@ class _UserDetailPageState extends State<UserDetailPage>
   double secondPageNicknameScale = 0.0;
 
   bool isSecondPage = false;
+  bool matchesLoaded = true;
 
   void ToSecondPage() {
     setState(() {
@@ -51,7 +56,9 @@ class _UserDetailPageState extends State<UserDetailPage>
 
   @override
   Widget build(BuildContext context) {
-    _user = ModalRoute.of(context).settings.arguments;
+    UserDetailArguments args = ModalRoute.of(context).settings.arguments;
+    _user = args.user;
+    _userMatchHistory = args.matchHistory;
 
     var csgoDetails = _user.getCsgoDetails();
     var stats = <Widget>[
@@ -93,74 +100,58 @@ class _UserDetailPageState extends State<UserDetailPage>
                   )
                 : Container(),
             !isSecondPage ? csgoInfo() : Container(),
-            isSecondPage
-                ? Container(
-                    margin: EdgeInsets.symmetric(
-                      horizontal: 40.0,
-                      vertical: 10.0,
+            Container(
+              margin: EdgeInsets.symmetric(
+                horizontal: 40.0,
+                vertical: 10.0,
+              ),
+              width: 170.0,
+              child: RaisedButton(
+                elevation: 0.0,
+                onPressed: () {
+                  isSecondPage ? ToFirstPage() : ToSecondPage();
+                },
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    Icon(
+                      isSecondPage ? Icons.list : Icons.history,
                     ),
-                    width: 170.0,
-                    child: RaisedButton(
-                      elevation: 0.0,
-                      onPressed: () {
-                        ToFirstPage();
-                      },
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: <Widget>[
-                          Icon(
-                            Icons.list,
-                          ),
-                          SizedBox(
-                            width: 5.0,
-                          ),
-                          Text(
-                            "Player Stats",
-                            style: TextStyle(),
-                          ),
-                        ],
+                    SizedBox(
+                      width: 5.0,
+                    ),
+                    Text(
+                      isSecondPage ? "Player Stats" : "Match History",
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
                       ),
                     ),
-                  )
-                : Container(),
-            !isSecondPage
-                ? Container(
-                    margin: EdgeInsets.symmetric(
-                      horizontal: 40.0,
-                      vertical: 10.0,
-                    ),
-                    width: 170.0,
-                    child: RaisedButton(
-                      elevation: 0.0,
-                      onPressed: () {
-                        ToSecondPage();
-                      },
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: <Widget>[
-                          Icon(
-                            Icons.history,
-                          ),
-                          SizedBox(
-                            width: 5.0,
-                          ),
-                          Text(
-                            "Match history",
-                            style: TextStyle(),
-                          ),
-                        ],
-                      ),
-                    ),
-                  )
-                : Container(),
+                  ],
+                ),
+              ),
+            ),
             isSecondPage
-                ? Container(
-                    child: Text("Loading matches..."),
-                  )
+                ? _buildMatchHistory()
                 : Container(),
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildMatchHistory() {
+    return Expanded(
+        child: ListView.builder(
+          padding: EdgeInsets.symmetric(horizontal: 40.0,),
+          itemCount: _userMatchHistory.length,
+          physics: BouncingScrollPhysics(),
+          itemBuilder: (context, index) {
+
+            var match = _userMatchHistory[index];
+
+            return Text(match.match_id);
+          },
+        ),
     );
   }
 

@@ -1,5 +1,4 @@
 import 'package:faceit_stats/models/CsgoDetails.dart';
-import 'package:faceit_stats/models/GameDetails.dart';
 
 class User {
   final String userID;

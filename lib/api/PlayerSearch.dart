@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:faceit_stats/api/MatchHistory.dart';
 import 'package:faceit_stats/models/CsgoDetails.dart';
 import 'package:http/http.dart' as http;
 
@@ -7,6 +8,9 @@ import 'package:faceit_stats/helpers/RemoteConfigManager.dart';
 import 'package:faceit_stats/models/user.dart';
 
 class PlayerSearch {
+
+  static User currentSearchedUser = null;
+
   static Future<User> GetUserGameDetails(String name, String game) async {
     var queryParams = {"nickname": name, "game": game};
 
@@ -20,6 +24,8 @@ class PlayerSearch {
     var decodedJSON = jsonDecode(response.body);
     var _user = User.fromJson(decodedJSON);
     // </ BASIC USER DETAILS >
+
+    currentSearchedUser = _user;
 
     // < CSGO DETAILS >
     uri = Uri.https("open.faceit.com", "/data/v4/players/${_user.userID}/stats/csgo");
