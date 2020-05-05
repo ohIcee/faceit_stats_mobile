@@ -49,9 +49,23 @@ class _UserDetailPageState extends State<UserDetailPage>
     });
   }
 
+  final pageViewController = PageController(initialPage: 0);
+  var currentPageValue = 0.0;
+
+  @override
+  void initState() {
+    super.initState();
+    pageViewController.addListener(() {
+      setState(() {
+        currentPageValue = pageViewController.page;
+      });
+    });
+  }
+
   @override
   void dispose() {
     super.dispose();
+    pageViewController.dispose();
   }
 
   @override
@@ -59,6 +73,8 @@ class _UserDetailPageState extends State<UserDetailPage>
     UserDetailArguments args = ModalRoute.of(context).settings.arguments;
     _user = args.user;
     _userMatchHistory = args.matchHistory;
+
+    debugPrint(currentPageValue.toString());
 
     var csgoDetails = _user.getCsgoDetails();
     var stats = <Widget>[
@@ -74,65 +90,16 @@ class _UserDetailPageState extends State<UserDetailPage>
       body: SafeArea(
         child: Column(
           children: <Widget>[
-            appBar(),
             topInfo(),
-            SizedBox(
-              height: 20.0,
-            ),
-            isSecondPage
-                ? Container()
-                : Text(
-                    _user.nickname,
-                    style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 23.0,
-                        letterSpacing: .7),
-                  ),
-            isSecondPage
-                ? Container()
-                : SizedBox(
-                    height: 20.0,
-                  ),
-            recentResults(_user.getCsgoDetails().recent_results),
-            !isSecondPage
-                ? SizedBox(
-                    height: 20.0,
-                  )
-                : Container(),
-            !isSecondPage ? csgoInfo() : Container(),
-            Container(
-              margin: EdgeInsets.symmetric(
-                horizontal: 40.0,
-                vertical: 10.0,
-              ),
-              width: 170.0,
-              child: RaisedButton(
-                elevation: 0.0,
-                onPressed: () {
-                  isSecondPage ? ToFirstPage() : ToSecondPage();
+            Expanded(
+              child: PageView.builder(
+                controller: pageViewController,
+                itemBuilder: (context, position) {
+                  return position == 0 ? _buildFirstPage() : _buildSecondPage();
                 },
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    Icon(
-                      isSecondPage ? Icons.list : Icons.history,
-                    ),
-                    SizedBox(
-                      width: 5.0,
-                    ),
-                    Text(
-                      isSecondPage ? "Player Stats" : "Match History",
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ],
-                ),
+                itemCount: 2,
               ),
             ),
-            isSecondPage
-                ? _buildMatchHistory()
-                : Container(),
           ],
         ),
       ),
@@ -140,18 +107,90 @@ class _UserDetailPageState extends State<UserDetailPage>
   }
 
   Widget _buildMatchHistory() {
-    return Expanded(
-        child: ListView.builder(
-          padding: EdgeInsets.symmetric(horizontal: 40.0,),
-          itemCount: _userMatchHistory.length,
-          physics: BouncingScrollPhysics(),
-          itemBuilder: (context, index) {
+    return ListView.builder(
+      padding: EdgeInsets.symmetric(
+        horizontal: 40.0,
+      ),
+      itemCount: _userMatchHistory.length,
+      physics: BouncingScrollPhysics(),
+      itemBuilder: (context, index) {
+        var match = _userMatchHistory[index];
+        return Text(match.match_id);
+      },
+    );
+  }
 
-            var match = _userMatchHistory[index];
-
-            return Text(match.match_id);
-          },
+  Widget _buildSecondPage() {
+    return Stack(
+      children: <Widget>[
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: <Widget>[
+            SizedBox(
+              height: 20.0,
+            ),
+            SizedBox(
+              child: Text(
+                "Match History",
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                    fontWeight: FontWeight.bold, fontSize: 23.0, letterSpacing: .7),
+              ),
+            ),
+            SizedBox(
+              height: 20.0,
+            ),
+            Expanded(child: _buildMatchHistory()),
+          ],
         ),
+        Positioned(
+          left: 10,
+          top: 0,
+          bottom: 0,
+          child: Icon(
+            Icons.chevron_left,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildFirstPage() {
+    return Stack(
+      children: <Widget>[
+        Column(
+          children: <Widget>[
+            SizedBox(
+              height: 20.0,
+            ),
+            Transform.translate(
+              offset: Offset.fromDirection(
+                  3, (currentPageValue * 200.0).clamp(0.0, 200.0)),
+              child: Text(
+                _user.nickname,
+                style: TextStyle(
+                    fontWeight: FontWeight.bold, fontSize: 23.0, letterSpacing: .7),
+              ),
+            ),
+            SizedBox(
+              height: 20.0,
+            ),
+            recentResults(_user.getCsgoDetails().recent_results),
+            SizedBox(
+              height: 20.0,
+            ),
+            csgoInfo(),
+          ],
+        ),
+        Positioned(
+          right: 10,
+          top: 0,
+          bottom: 0,
+          child: Icon(
+            Icons.chevron_right,
+          ),
+        ),
+      ],
     );
   }
 
@@ -258,56 +297,66 @@ class _UserDetailPageState extends State<UserDetailPage>
   }
 
   Widget topInfo() {
-    return AnimatedContainer(
-      duration: Duration(milliseconds: 1000),
-      height: coverImageHeight,
-      curve: Curves.easeOutCubic,
-      child: Stack(
-        children: <Widget>[
-          SizedBox(
-            height: double.infinity,
-            child: AnimatedOpacity(
-              duration: Duration(milliseconds: 700),
-              curve: Curves.easeOutCubic,
-              child: Image.network(_user.coverImgLink, fit: BoxFit.cover),
-              opacity: coverImageOpacity,
-            ),
-          ),
-          Center(
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                ClipOval(
-                  child: AnimatedContainer(
-                    duration: Duration(milliseconds: 700),
-                    height: avatarImageSize,
-                    curve: Curves.easeOutCubic,
-                    child: Image.network(
-                      _user.avatarImgLink,
-                      fit: BoxFit.cover,
-                    ),
-                  ),
+    return Column(
+      children: <Widget>[
+        appBar(),
+        AnimatedContainer(
+          duration: Duration(milliseconds: 1000),
+          height: ((1 - currentPageValue) * 200.0).clamp(100.0, 200.0),
+          curve: Curves.easeOutCubic,
+          child: Stack(
+            children: <Widget>[
+              SizedBox(
+                height: double.infinity,
+                child: AnimatedOpacity(
+                  duration: Duration(milliseconds: 700),
+                  curve: Curves.easeOutCubic,
+                  child: Image.network(_user.coverImgLink, fit: BoxFit.cover),
+                  opacity: (1 - currentPageValue).clamp(.35, .8),
                 ),
-                isSecondPage
-                    ? SizedBox(
-                        width: 20.0,
-                      )
-                    : Container(),
-                isSecondPage
-                    ? Text(
-                        _user.nickname,
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 23.0,
-                          letterSpacing: .7,
+              ),
+              Center(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    ClipOval(
+                      child: AnimatedContainer(
+                        duration: Duration(milliseconds: 700),
+                        height:
+                            ((1 - currentPageValue) * 150.0).clamp(80.0, 150.0),
+                        curve: Curves.easeOutCubic,
+                        child: Image.network(
+                          _user.avatarImgLink,
+                          fit: BoxFit.cover,
                         ),
-                      )
-                    : Container(),
-              ],
-            ),
+                      ),
+                    ),
+                    Container(
+                      margin: EdgeInsets.only(
+                        left: 20.0,
+                      ),
+                      width: (currentPageValue * 150.0).clamp(0.0, 150.0),
+                      child: Opacity(
+                        opacity: currentPageValue,
+                        child: Text(
+                          _user.nickname,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 23.0,
+                            letterSpacing: .7,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+
+            ],
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 
@@ -328,11 +377,11 @@ class _UserDetailPageState extends State<UserDetailPage>
     return Container(
       color: Color.fromRGBO(255, 85, 0, 1),
       alignment: Alignment.center,
-      height: 75.0,
+      height: 50.0,
       child: Text(
         "FACEIT STATS",
         style: TextStyle(
-          fontSize: 18.0,
+          fontSize: 15.0,
           fontWeight: FontWeight.bold,
           color: Colors.black,
         ),

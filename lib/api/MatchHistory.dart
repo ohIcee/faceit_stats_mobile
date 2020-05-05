@@ -30,6 +30,8 @@ class MatchHistory {
 
     // TODO GET MATCH DETAILS
 
+    if (matchesJSON.length <= 0) return null;
+
     // Create List of Matches from the retrieved matches
     List<Match> matches = new List<Match>();
     matchesJSON.forEach((element) {
