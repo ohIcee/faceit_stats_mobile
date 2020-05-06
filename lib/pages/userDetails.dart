@@ -1,8 +1,11 @@
-import 'package:faceit_stats/api/MatchHistory.dart';
+import 'dart:math';
+
+import 'package:faceit_stats/helpers/Rank.dart';
 import 'package:faceit_stats/models/Match.dart';
 import 'package:faceit_stats/models/CsgoDetails.dart';
 import 'package:faceit_stats/models/userDetailArguments.dart';
 import 'package:flutter/material.dart';
+import 'package:charts_flutter/flutter.dart' as charts;
 
 import '../models/user.dart';
 
@@ -20,34 +23,6 @@ class _UserDetailPageState extends State<UserDetailPage>
     with TickerProviderStateMixin {
   User _user;
   List<Match> _userMatchHistory;
-
-  double coverImageHeight = 200.0;
-  double avatarImageSize = 150.0;
-  double coverImageOpacity = .8;
-  double secondPageNicknameScale = 0.0;
-
-  bool isSecondPage = false;
-  bool matchesLoaded = true;
-
-  void ToSecondPage() {
-    setState(() {
-      isSecondPage = true;
-      coverImageHeight = 100.0;
-      avatarImageSize = 80.0;
-      coverImageOpacity = .35;
-      secondPageNicknameScale = 1.0;
-    });
-  }
-
-  void ToFirstPage() {
-    setState(() {
-      isSecondPage = false;
-      coverImageHeight = 200.0;
-      avatarImageSize = 150.0;
-      coverImageOpacity = .8;
-      secondPageNicknameScale = 0.0;
-    });
-  }
 
   final pageViewController = PageController(initialPage: 0);
   var currentPageValue = 0.0;
@@ -68,22 +43,13 @@ class _UserDetailPageState extends State<UserDetailPage>
     pageViewController.dispose();
   }
 
+  var series;
+
   @override
   Widget build(BuildContext context) {
     UserDetailArguments args = ModalRoute.of(context).settings.arguments;
     _user = args.user;
     _userMatchHistory = args.matchHistory;
-
-    debugPrint(currentPageValue.toString());
-
-    var csgoDetails = _user.getCsgoDetails();
-    var stats = <Widget>[
-      stat(csgoDetails.match_count, "Matches"),
-      stat(csgoDetails.win_rate, "Win rate %"),
-      stat(csgoDetails.longest_win_streak, "Longest Win Streak"),
-      stat(csgoDetails.average_kd, "Average K/D Ratio"),
-      stat(csgoDetails.avg_headshot, "Average Headshots %"),
-    ];
 
     return Scaffold(
       backgroundColor: Color.fromRGBO(20, 22, 22, 1),
@@ -134,7 +100,9 @@ class _UserDetailPageState extends State<UserDetailPage>
                 "Match History",
                 textAlign: TextAlign.center,
                 style: TextStyle(
-                    fontWeight: FontWeight.bold, fontSize: 23.0, letterSpacing: .7),
+                    fontWeight: FontWeight.bold,
+                    fontSize: 23.0,
+                    letterSpacing: .7),
               ),
             ),
             SizedBox(
@@ -156,9 +124,41 @@ class _UserDetailPageState extends State<UserDetailPage>
   }
 
   Widget _buildFirstPage() {
+    var currentELO = _user.getCsgoDetails().faceit_elo;
+    var rank = Rank.eloToRank(currentELO);
+    var neededELO = rank.neededELO;
+    var maxELO = rank.maxELO;
+
+    int currentGraphELOValue =
+        (((currentELO - neededELO) * 100) / (maxELO - neededELO)).round();
+    if (currentELO > 2000)
+      currentGraphELOValue =
+          100; // Fixes graph if player is > 2000 ELO (rank 10)
+
+    int difference = 100 - currentGraphELOValue;
+
+    var data = [
+      new ELO('progress', currentGraphELOValue, rank.color),
+      new ELO('missing', difference, Colors.black54),
+    ];
+
+    series = [
+      new charts.Series(
+        id: 'ELO',
+        domainFn: (ELO clickData, _) => clickData.rank,
+        measureFn: (ELO clickData, _) => clickData.playerELO,
+        colorFn: (ELO clickData, _) => clickData.color,
+        data: data,
+      )
+    ];
+
     return Stack(
       children: <Widget>[
-        Column(
+        ListView(
+          padding: EdgeInsets.only(
+            bottom: 20.0,
+          ),
+          physics: BouncingScrollPhysics(),
           children: <Widget>[
             SizedBox(
               height: 20.0,
@@ -168,8 +168,11 @@ class _UserDetailPageState extends State<UserDetailPage>
                   3, (currentPageValue * 200.0).clamp(0.0, 200.0)),
               child: Text(
                 _user.nickname,
+                textAlign: TextAlign.center,
                 style: TextStyle(
-                    fontWeight: FontWeight.bold, fontSize: 23.0, letterSpacing: .7),
+                    fontWeight: FontWeight.bold,
+                    fontSize: 23.0,
+                    letterSpacing: .7),
               ),
             ),
             SizedBox(
@@ -178,6 +181,60 @@ class _UserDetailPageState extends State<UserDetailPage>
             recentResults(_user.getCsgoDetails().recent_results),
             SizedBox(
               height: 20.0,
+            ),
+            Stack(
+              children: <Widget>[
+                SizedBox(
+                  height: 200.0,
+                  child: charts.PieChart(
+                    series,
+                    animate: false,
+                    defaultRenderer: new charts.ArcRendererConfig(
+                        arcWidth: 30,
+                        strokeWidthPx: 0.0,
+                        startAngle: 4 / 5 * pi,
+                        arcLength: 7 / 5 * pi),
+                  ),
+                ),
+                Positioned(
+                  bottom: 30,
+                  left: 130,
+                  child: Text(
+                    neededELO.toString(),
+                  ),
+                ),
+                Positioned.fill(
+                  child: Align(
+                    alignment: Alignment.center,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        Text(
+                          currentELO.toString(),
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 20.0,
+                          ),
+                        ),
+                        Text(
+                          "Rank ${rank.rank}",
+                          style: TextStyle(
+                            fontSize: 17.0,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                Positioned(
+                  bottom: 30,
+                  right: 130,
+                  child: Text(
+                    currentELO > 2000 ? "2001+" : maxELO.toString(),
+                  ),
+                ),
+              ],
             ),
             csgoInfo(),
           ],
@@ -201,6 +258,7 @@ class _UserDetailPageState extends State<UserDetailPage>
       stat(csgoDetails.match_count, "Matches"),
       stat(csgoDetails.win_rate, "Win rate %"),
       stat(csgoDetails.longest_win_streak, "Longest Win Streak"),
+      stat(csgoDetails.current_win_streak, "Current Win Streak"),
       stat(csgoDetails.average_kd, "Average K/D Ratio"),
       stat(csgoDetails.avg_headshot, "Average Headshots %"),
     ];
@@ -311,7 +369,10 @@ class _UserDetailPageState extends State<UserDetailPage>
                 child: AnimatedOpacity(
                   duration: Duration(milliseconds: 700),
                   curve: Curves.easeOutCubic,
-                  child: Image.network(_user.coverImgLink, fit: BoxFit.cover),
+                  child: Image.network(
+                    _user.coverImgLink,
+                    fit: BoxFit.cover,
+                  ),
                   opacity: (1 - currentPageValue).clamp(.35, .8),
                 ),
               ),
@@ -324,10 +385,12 @@ class _UserDetailPageState extends State<UserDetailPage>
                         duration: Duration(milliseconds: 700),
                         height:
                             ((1 - currentPageValue) * 150.0).clamp(80.0, 150.0),
+                        width:
+                            ((1 - currentPageValue) * 150.0).clamp(80.0, 150.0),
                         curve: Curves.easeOutCubic,
                         child: Image.network(
                           _user.avatarImgLink,
-                          fit: BoxFit.cover,
+                          fit: BoxFit.fill,
                         ),
                       ),
                     ),
@@ -352,25 +415,11 @@ class _UserDetailPageState extends State<UserDetailPage>
                   ],
                 ),
               ),
-
             ],
           ),
         ),
       ],
     );
-  }
-
-  Color getRankColor(int rank) {
-    if (rank == 1)
-      return Colors.white70;
-    else if (rank == 2 || rank == 3)
-      return Colors.green;
-    else if (rank >= 4 && rank <= 7)
-      return Colors.yellow;
-    else if (rank == 8 || rank == 9)
-      return Colors.deepOrange;
-    else if (rank == 10) return Colors.red;
-    return null;
   }
 
   Widget appBar() {
@@ -388,4 +437,15 @@ class _UserDetailPageState extends State<UserDetailPage>
       ),
     );
   }
+}
+
+class ELO {
+  final String rank;
+  final int playerELO;
+  final charts.Color color;
+  final strokeWidth = 0.0;
+
+  ELO(this.rank, this.playerELO, Color color)
+      : this.color = new charts.Color(
+            r: color.red, g: color.green, b: color.blue, a: color.alpha);
 }

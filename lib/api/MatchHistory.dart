@@ -4,7 +4,6 @@ import 'dart:io';
 import 'package:faceit_stats/models/Match.dart';
 import 'package:faceit_stats/api/PlayerSearch.dart';
 import 'package:faceit_stats/helpers/RemoteConfigManager.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart' as http;
 
 class MatchHistory {
@@ -28,9 +27,13 @@ class MatchHistory {
     var decodedJSON = jsonDecode(response.body);
     List<dynamic> matchesJSON = decodedJSON["items"];
 
-    // TODO GET MATCH DETAILS
-
     if (matchesJSON.length <= 0) return null;
+
+    // TODO GET MATCH DETAILS
+//    matchesJSON.forEach((element) {
+//      var match = Match.fromJson(element);
+//
+//    });
 
     // Create List of Matches from the retrieved matches
     List<Match> matches = new List<Match>();
