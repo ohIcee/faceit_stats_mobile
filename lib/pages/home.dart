@@ -87,6 +87,8 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future<void> SearchUser() async {
+    MatchHistory.ResetMatchHistory();
+
     print("Searching user " + userSearchInputController.text);
     var username = userSearchInputController.text;
     User user = await PlayerSearch.GetUserGameDetails(username, "csgo");
