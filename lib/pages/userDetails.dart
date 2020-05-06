@@ -1,6 +1,5 @@
 import 'dart:math';
 
-import 'package:faceit_stats/api/MatchHistory.dart';
 import 'package:faceit_stats/helpers/Rank.dart';
 import 'package:faceit_stats/models/Faction.dart';
 import 'package:faceit_stats/models/Match.dart';
@@ -82,7 +81,7 @@ class _UserDetailPageState extends State<UserDetailPage>
   Widget _buildMatchHistory() {
     return ListView.builder(
       padding: EdgeInsets.symmetric(
-        horizontal: 40.0,
+        horizontal: 20.0,
       ),
       itemCount: _userMatchHistory.length,
       physics: BouncingScrollPhysics(),
@@ -94,7 +93,7 @@ class _UserDetailPageState extends State<UserDetailPage>
   }
 
   Widget _buildMatchHistoryCard(Match match) {
-    Faction userFaction = null;
+    Faction userFaction;
     match.factions.forEach((faction) {
       faction.players.forEach((player) {
         if (userFaction != null) return;
@@ -109,58 +108,65 @@ class _UserDetailPageState extends State<UserDetailPage>
       margin: EdgeInsets.only(
         bottom: 10.0,
       ),
-      child: Row(
-        children: <Widget>[
-          Container(
-            width: 100.0,
-          ),
-          Expanded(
-            child: Container(
-              padding: EdgeInsets.symmetric(
-                vertical: 10.0,
-                horizontal: 15.0,
-              ),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: <Widget>[
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: <Widget>[
-                      Text(
-                        match.map.toUpperCase(),
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 17.0,
-                        ),
-                      ),
-                      Text(
-                        match.game_mode,
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 17.0,
-                        ),
-                      ),
-                    ],
-                  ),
-                  Text(
-                    "SCORE ${match.score}",
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 17.0,
-                      color: "faction${userFaction.faction_num}" == match.winning_faction
-                          ? Colors.green
-                          : Colors.red,
-                    ),
-                  ),
-                  Text(
-                    formatTime(match.finished_at * 1000),
-                  ),
-                ],
+      child: IntrinsicHeight(
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: <Widget>[
+            Container(
+              width: 120.0,
+              child: Image.asset(
+                'assets/map_images/${match.map}.jpg',
+                fit: BoxFit.cover,
               ),
             ),
-          ),
-        ],
+            Expanded(
+              child: Container(
+                padding: EdgeInsets.symmetric(
+                  vertical: 10.0,
+                  horizontal: 15.0,
+                ),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: <Widget>[
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: <Widget>[
+                        Text(
+                          match.map.toUpperCase(),
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 17.0,
+                          ),
+                        ),
+                        Text(
+                          match.game_mode,
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 17.0,
+                          ),
+                        ),
+                      ],
+                    ),
+                    Text(
+                      "SCORE ${match.score}",
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 17.0,
+                        color: "faction${userFaction.faction_num}" == match.winning_faction
+                            ? Colors.green
+                            : Colors.red,
+                      ),
+                    ),
+                    Text(
+                      formatTime(match.finished_at * 1000),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -191,7 +197,7 @@ class _UserDetailPageState extends State<UserDetailPage>
           ],
         ),
         Positioned(
-          left: 10,
+          left: 0,
           top: 0,
           bottom: 0,
           child: Icon(
@@ -218,7 +224,7 @@ class _UserDetailPageState extends State<UserDetailPage>
 
     var data = [
       new ELO('progress', currentGraphELOValue, rank.color),
-      new ELO('missing', difference, Colors.black54),
+      new ELO('missing', difference, Colors.white10.withOpacity(.1)),
     ];
 
     series = [

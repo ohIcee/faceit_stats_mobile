@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:faceit_stats/api/MatchHistory.dart';
 import 'package:faceit_stats/models/CsgoDetails.dart';
+import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
 import 'package:faceit_stats/helpers/RemoteConfigManager.dart';
@@ -9,9 +10,11 @@ import 'package:faceit_stats/models/user.dart';
 
 class PlayerSearch {
 
-  static User currentSearchedUser = null;
+  static User currentSearchedUser;
 
   static Future<User> GetUserGameDetails(String name, String game) async {
+    currentSearchedUser = null;
+
     var queryParams = {"nickname": name, "game": game};
 
     // < BASIC USER DETAILS >

@@ -13,7 +13,7 @@ class MatchHistory {
 
   static void ResetMatchHistory() {
     _numMatchesLoaded = 0;
-    currentUser = PlayerSearch.currentSearchedUser;
+//    currentUser = PlayerSearch.currentSearchedUser;
     debugPrint("RESET MATCH HISTORY");
   }
 
