@@ -1,10 +1,10 @@
 import 'dart:math';
 
+import 'package:faceit_stats/api/MatchHistory.dart';
 import 'package:faceit_stats/helpers/Rank.dart';
 import 'package:faceit_stats/models/Faction.dart';
 import 'package:faceit_stats/models/Match.dart';
 import 'package:faceit_stats/models/CsgoDetails.dart';
-import 'package:faceit_stats/models/userDetailArguments.dart';
 import 'package:flutter/material.dart';
 import 'package:charts_flutter/flutter.dart' as charts;
 import 'package:time_formatter/time_formatter.dart';
@@ -24,7 +24,6 @@ class UserDetailPage extends StatefulWidget {
 class _UserDetailPageState extends State<UserDetailPage>
     with TickerProviderStateMixin {
   User _user;
-  List<Match> _userMatchHistory;
 
   final pageViewController = PageController(initialPage: 0);
   var currentPageValue = 0.0;
@@ -32,6 +31,7 @@ class _UserDetailPageState extends State<UserDetailPage>
   @override
   void initState() {
     super.initState();
+
     pageViewController.addListener(() {
       setState(() {
         currentPageValue = pageViewController.page;
@@ -42,7 +42,6 @@ class _UserDetailPageState extends State<UserDetailPage>
   @override
   void dispose() {
     super.dispose();
-    _userMatchHistory = new List<Match>();
     _user = null;
     pageViewController.dispose();
   }
@@ -51,9 +50,8 @@ class _UserDetailPageState extends State<UserDetailPage>
 
   @override
   Widget build(BuildContext context) {
-    UserDetailArguments args = ModalRoute.of(context).settings.arguments;
-    _user = args.user;
-    _userMatchHistory = args.matchHistory;
+    User args_user = ModalRoute.of(context).settings.arguments;
+    _user = args_user;
 
     return Scaffold(
       backgroundColor: Color.fromRGBO(20, 22, 22, 1),
@@ -79,14 +77,22 @@ class _UserDetailPageState extends State<UserDetailPage>
   }
 
   Widget _buildMatchHistory() {
+    var animationController =
+        new AnimationController(vsync: this, duration: Duration(seconds: 1));
+    var animationTween =
+        new Tween<Offset>(begin: Offset(0, 0), end: Offset(1, 0)).animate(
+            CurvedAnimation(
+                parent: animationController,
+                curve: Curves.fastLinearToSlowEaseIn));
+
     return ListView.builder(
       padding: EdgeInsets.symmetric(
         horizontal: 20.0,
       ),
-      itemCount: _userMatchHistory.length,
+      itemCount: MatchHistory.loadedMatches.length,
       physics: BouncingScrollPhysics(),
       itemBuilder: (context, index) {
-        var match = _userMatchHistory[index];
+        var match = MatchHistory.loadedMatches[index];
         return _buildMatchHistoryCard(match);
       },
     );
@@ -153,7 +159,8 @@ class _UserDetailPageState extends State<UserDetailPage>
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 17.0,
-                        color: "faction${userFaction.faction_num}" == match.winning_faction
+                        color: "faction${userFaction.faction_num}" ==
+                                match.winning_faction
                             ? Colors.green
                             : Colors.red,
                       ),

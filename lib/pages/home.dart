@@ -1,10 +1,8 @@
 import 'package:faceit_stats/api/MatchHistory.dart';
 import 'package:faceit_stats/helpers/RemoteConfigManager.dart';
-import 'package:faceit_stats/models/userDetailArguments.dart';
 import 'package:flutter/material.dart';
 
 import 'package:faceit_stats/api/PlayerSearch.dart';
-import 'package:faceit_stats/models/Match.dart';
 import 'package:faceit_stats/models/user.dart';
 
 class HomePage extends StatefulWidget {
@@ -95,9 +93,9 @@ class _HomePageState extends State<HomePage> {
     print("Searching user " + userSearchInputController.text);
     var username = userSearchInputController.text;
     User user = await PlayerSearch.GetUserGameDetails(username, "csgo");
-    List<Match> userMatchHistory = await MatchHistory.LoadNext(5);
+    await MatchHistory.LoadNext(15);
     Navigator.pushNamed(context, '/userDetails',
-        arguments: UserDetailArguments(user, userMatchHistory));
+        arguments: user);
   }
 
   Widget appBar() {

@@ -10,14 +10,18 @@ import 'package:http/http.dart' as http;
 class MatchHistory {
   static int _numMatchesLoaded = 0;
   static var currentUser = PlayerSearch.currentSearchedUser;
+  static List<Match> loadedMatches = new List<Match>();
 
   static void ResetMatchHistory() {
     _numMatchesLoaded = 0;
+    loadedMatches = new List<Match>();
 //    currentUser = PlayerSearch.currentSearchedUser;
     debugPrint("RESET MATCH HISTORY");
   }
 
-  static Future<List<Match>> LoadNext(int num) async {
+  static Future<bool> LoadNext(int num) async {
+    currentUser = PlayerSearch.currentSearchedUser;
+
     var queryParams = {
       "nickname": currentUser.userID.toString(),
       "game": "csgo",
@@ -70,9 +74,11 @@ class MatchHistory {
     // (if matches don't get retrieved in order)
     for (var i = 0; i < matchesJSON.length; i++) {
       var match = Match.fromJson(matchesJSON[i], matchesDetails[i]);
-      matches.add(match);
+//      matches.add(match);
+      loadedMatches.add(match);
     }
 
-    return matches;
+//    return matches;
+    return true;
   }
 }
