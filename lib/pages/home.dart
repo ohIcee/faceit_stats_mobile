@@ -34,16 +34,11 @@ class _HomePageState extends State<HomePage> {
 
   void LoadApp() async {
     await RemoteConfigManager.Init();
-    setState(() {
-      isLoaded = true;
-    });
+    setState(() => isLoaded = true);
   }
 
   @override
   Widget build(BuildContext context) {
-
-    debugPrint("init STATE");
-
     return Scaffold(
       body: SafeArea(
           child: Column(
@@ -88,12 +83,14 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future<void> SearchUser() async {
+    setState(() => isLoaded = false);
     MatchHistory.ResetMatchHistory();
 
     print("Searching user " + userSearchInputController.text);
     var username = userSearchInputController.text;
     User user = await PlayerSearch.GetUserGameDetails(username, "csgo");
-    await MatchHistory.LoadNext(15);
+    await MatchHistory.LoadNext(2);
+    setState(() => isLoaded = true);
     Navigator.pushNamed(context, '/userDetails',
         arguments: user);
   }

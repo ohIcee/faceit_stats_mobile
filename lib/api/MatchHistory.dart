@@ -15,8 +15,6 @@ class MatchHistory {
   static void ResetMatchHistory() {
     _numMatchesLoaded = 0;
     loadedMatches = new List<Match>();
-//    currentUser = PlayerSearch.currentSearchedUser;
-    debugPrint("RESET MATCH HISTORY");
   }
 
   static Future<bool> LoadNext(int num) async {
@@ -66,19 +64,14 @@ class MatchHistory {
       matchesDetails.add(matchJSON["rounds"][0]);
     });
 
-    // Create List of Matches from the retrieved matches
-    List<Match> matches = new List<Match>();
-
     // TODO Convert this for loop into a loop that matches
     // match_id's together
     // (if matches don't get retrieved in order)
     for (var i = 0; i < matchesJSON.length; i++) {
       var match = Match.fromJson(matchesJSON[i], matchesDetails[i]);
-//      matches.add(match);
       loadedMatches.add(match);
     }
 
-//    return matches;
     return true;
   }
 }

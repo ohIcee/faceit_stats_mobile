@@ -24,8 +24,10 @@ class UserDetailPage extends StatefulWidget {
 class _UserDetailPageState extends State<UserDetailPage>
     with TickerProviderStateMixin {
   User _user;
+  bool isLoadingMatches = false;
 
   final pageViewController = PageController(initialPage: 0);
+  final matchHistoryListKey = PageStorageKey('MatchHistoryList');
   var currentPageValue = 0.0;
 
   @override
@@ -61,6 +63,7 @@ class _UserDetailPageState extends State<UserDetailPage>
             topInfo(),
             Expanded(
               child: PageView.builder(
+                key: matchHistoryListKey,
                 controller: pageViewController,
                 itemBuilder: (context, position) {
                   return position == 0
@@ -77,25 +80,57 @@ class _UserDetailPageState extends State<UserDetailPage>
   }
 
   Widget _buildMatchHistory() {
-    var animationController =
-        new AnimationController(vsync: this, duration: Duration(seconds: 1));
-    var animationTween =
-        new Tween<Offset>(begin: Offset(0, 0), end: Offset(1, 0)).animate(
-            CurvedAnimation(
-                parent: animationController,
-                curve: Curves.fastLinearToSlowEaseIn));
-
     return ListView.builder(
+      key: matchHistoryListKey,
       padding: EdgeInsets.symmetric(
         horizontal: 20.0,
       ),
-      itemCount: MatchHistory.loadedMatches.length,
+      itemCount: MatchHistory.loadedMatches.length + 1,
       physics: BouncingScrollPhysics(),
       itemBuilder: (context, index) {
-        var match = MatchHistory.loadedMatches[index];
-        return _buildMatchHistoryCard(match);
+        if (index == MatchHistory.loadedMatches.length) {
+          return Container(
+            height: 50.0,
+            margin: EdgeInsets.only(
+              bottom: 20.0,
+            ),
+            child: isLoadingMatches
+                ? Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: <Widget>[
+                      SizedBox(
+                        width: 20.0,
+                        height: 20.0,
+                        child: CircularProgressIndicator(),
+                      ),
+                      SizedBox(
+                        width: 10.0,
+                      ),
+                      Text("Loading...")
+                    ],
+                  )
+                : RaisedButton(
+                    onPressed: () => loadNextMatchHistory(2),
+                    child: Text(
+                      "Load more...",
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+          );
+        } else {
+          var match = MatchHistory.loadedMatches[index];
+          return _buildMatchHistoryCard(match);
+        }
       },
     );
+  }
+
+  void loadNextMatchHistory(int num) async {
+    setState(() => isLoadingMatches = true);
+    await MatchHistory.LoadNext(num);
+    setState(() => isLoadingMatches = false);
   }
 
   Widget _buildMatchHistoryCard(Match match) {
@@ -452,7 +487,7 @@ class _UserDetailPageState extends State<UserDetailPage>
         appBar(),
         AnimatedContainer(
           duration: Duration(milliseconds: 1000),
-          height: ((1 - currentPageValue) * 200.0).clamp(100.0, 200.0),
+          height: ((1 - currentPageValue) * 200.0).clamp(100.0, 165.0),
           curve: Curves.easeOutCubic,
           child: Stack(
             children: <Widget>[
@@ -476,9 +511,9 @@ class _UserDetailPageState extends State<UserDetailPage>
                       child: AnimatedContainer(
                         duration: Duration(milliseconds: 700),
                         height:
-                            ((1 - currentPageValue) * 150.0).clamp(80.0, 150.0),
+                            ((1 - currentPageValue) * 150.0).clamp(80.0, 130.0),
                         width:
-                            ((1 - currentPageValue) * 150.0).clamp(80.0, 150.0),
+                            ((1 - currentPageValue) * 150.0).clamp(80.0, 130.0),
                         curve: Curves.easeOutCubic,
                         child: Image.network(
                           _user.avatarImgLink,
