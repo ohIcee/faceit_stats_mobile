@@ -35,7 +35,7 @@ class FavouritesManager {
     return File('$filePath/$_fileName');
   }
 
-  static Future<File> addFavourite(String nickname) async {
+  static Future<File> addFavourite(String nickname, String avatarUrl) async {
     List<dynamic> nicknames = new List<dynamic>();
 
     // READ FAVOURITES AND DECODE THEM IF AVAILABLE
@@ -47,11 +47,11 @@ class FavouritesManager {
 
     // store previous stored into list
     List<Map<String, dynamic>> previousFavs = new List<Map<String, dynamic>>();
-    nicknames.forEach((nick) =>
-        previousFavs.add(Favourite(nickname: nick["nickname"]).toJson()));
+    nicknames.forEach((usr) =>
+        previousFavs.add(Favourite(nickname: usr["nickname"], avatarUrl: usr["avatarUrl"]).toJson()));
 
     // WRITE FAVOURITE TO FILE
-    var newFav = Favourite(nickname: nickname);
+    var newFav = Favourite(nickname: nickname, avatarUrl: avatarUrl);
     previousFavs.add(newFav.toJson());
     Map<String, dynamic> temp = {'"favourites"': previousFavs};
 
@@ -72,13 +72,12 @@ class FavouritesManager {
       return;
     }
     var decoded = jsonDecode(content);
-    debugPrint(decoded.toString());
     List<dynamic> nicknames = decoded["favourites"];
 
     // store stored into list
     List<Favourite> favs = new List<Favourite>();
     nicknames
-        .forEach((nick) => favs.add(Favourite(nickname: nick["nickname"])));
+        .forEach((usr) => favs.add(Favourite(nickname: usr["nickname"], avatarUrl: usr["avatarUrl"])));
 
     loadedFavourites = favs;
   }
@@ -96,7 +95,7 @@ class FavouritesManager {
     // store previous stored into list
     List<Favourite> previousFavs = new List<Favourite>();
     nicknames.forEach(
-        (nick) => previousFavs.add(Favourite(nickname: nick["nickname"])));
+        (usr) => previousFavs.add(Favourite(nickname: usr["nickname"], avatarUrl: usr["avatarUrl"])));
 
     // Remove favourite
     previousFavs.removeWhere((e) => e.nickname == nickname);

@@ -151,9 +151,30 @@ class _HomePageState extends State<HomePage> {
             vertical: 10.0,
             horizontal: 20.0,
           ),
+          height: 80.0,
           child: Row(
             children: <Widget>[
-              Text(fav.nickname),
+              Container(
+                padding: EdgeInsets.all(5.0),
+                child: ClipOval(
+                  child: Container(
+                    height: 50.0,
+                    width: 50.0,
+                    child: Image.network(
+                      fav.avatarUrl,
+                      fit: BoxFit.fill,
+                    ),
+                  ),
+                ),
+              ),
+              SizedBox(width: 10.0),
+              Text(
+                fav.nickname,
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16.0,
+                ),
+              ),
               Spacer(),
               IconButton(
                 onPressed: () => unFavourite(fav.nickname),

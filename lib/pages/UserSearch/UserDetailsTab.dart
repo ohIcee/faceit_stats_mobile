@@ -231,7 +231,7 @@ class UserDetailsTabState extends State<UserDetailsTab> {
   void ToggleFavourite() async {
     isFavourited
         ? await FavouritesManager.removeFavourite(_user.nickname)
-        : await FavouritesManager.addFavourite(_user.nickname);
+        : await FavouritesManager.addFavourite(_user.nickname, _user.avatarImgLink);
     setState(() {
       isFavourited = !isFavourited;
     });
