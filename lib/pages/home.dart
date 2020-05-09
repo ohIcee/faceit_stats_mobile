@@ -57,7 +57,7 @@ class _HomePageState extends State<HomePage> {
       body: SafeArea(
         child: Column(
           children: <Widget>[
-            CustomAppBar(),
+            CustomAppBar(backButton: false),
             searchSection(),
           ],
         ),
@@ -70,6 +70,8 @@ class _HomePageState extends State<HomePage> {
       margin: EdgeInsets.only(
         top: 50.0,
         bottom: 20.0,
+        left: 90.0,
+        right: 90.0,
       ),
       child: SvgPicture.asset(
         "assets/faceit_logo.svg",
@@ -118,15 +120,19 @@ class _HomePageState extends State<HomePage> {
               favouritesLoaded
                   ? Container(
                       height: 250.0,
-                      child: ListView.builder(
-                        itemCount: FavouritesManager.loadedFavourites.length,
-                        itemBuilder: (context, index) {
-                          return _buildFavouriteTile(
-                              FavouritesManager.loadedFavourites[index]);
-                        },
-                      ),
+                      child: FavouritesManager.loadedFavourites.length > 0
+                          ? ListView.builder(
+                              physics: BouncingScrollPhysics(),
+                              itemCount:
+                                  FavouritesManager.loadedFavourites.length,
+                              itemBuilder: (context, index) {
+                                return _buildFavouriteTile(
+                                    FavouritesManager.loadedFavourites[index]);
+                              },
+                            )
+                          : Text("No favourites!"),
                     )
-                  : Container(),
+                  : Text("Loading favourites..."),
             ],
           ),
         ),
@@ -142,13 +148,29 @@ class _HomePageState extends State<HomePage> {
         onTap: () => searchUser(username: fav.nickname),
         child: Container(
           padding: EdgeInsets.symmetric(
-            vertical: 20.0,
+            vertical: 10.0,
             horizontal: 20.0,
           ),
-          child: Text(fav.nickname),
+          child: Row(
+            children: <Widget>[
+              Text(fav.nickname),
+              Spacer(),
+              IconButton(
+                onPressed: () => unFavourite(fav.nickname),
+                icon: Icon(
+                  Icons.favorite,
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
+  }
+
+  void unFavourite(String nickname) async {
+    await FavouritesManager.removeFavourite(nickname);
+    setState(() {});
   }
 
   Future<void> searchUser({String username}) async {
@@ -156,7 +178,7 @@ class _HomePageState extends State<HomePage> {
     setState(() => isLoaded = false);
     MatchHistory.ResetMatchHistory();
 
-    if (username == null) var username = userSearchInputController.text;
+    if (username == null) username = userSearchInputController.text;
     var response = await PlayerSearch.GetUserGameDetails(username, "csgo");
     if (response == null) {
       if (PlayerSearch.lastAPIResponse == API_RESPONSES.CSGO_NOT_FOUND)

@@ -1,5 +1,4 @@
 import 'package:faceit_stats/api/MatchHistory.dart';
-import 'package:faceit_stats/helpers/FavouritesManager.dart';
 import 'package:faceit_stats/models/user.dart';
 import 'package:faceit_stats/pages/UserSearch/UserDetailsTab.dart';
 import 'package:faceit_stats/pages/UserSearch/UserMapStatsTab.dart';
@@ -70,7 +69,7 @@ class _UserDetailPageState extends State<UserDetailPage>
   Widget topInfo() {
     return Column(
       children: <Widget>[
-        CustomAppBar(),
+        CustomAppBar(backButton: true),
         AnimatedContainer(
           duration: Duration(milliseconds: 1000),
           height: ((1 - currentPageValue) * 200.0).clamp(100.0, 165.0),

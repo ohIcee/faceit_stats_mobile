@@ -56,6 +56,7 @@ class FavouritesManager {
     Map<String, dynamic> temp = {'"favourites"': previousFavs};
 
     await file.writeAsString('$temp');
+    await loadFavourites();
   }
 
   static Future<void> Clear() async {
@@ -106,6 +107,7 @@ class FavouritesManager {
     Map<String, dynamic> temp = {'"favourites"': newFavs};
 
     await file.writeAsString('$temp');
+    await loadFavourites();
   }
 
   static bool favouriteExists(String nickname) {
