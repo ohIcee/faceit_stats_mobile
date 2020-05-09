@@ -9,6 +9,7 @@ import 'package:faceit_stats/api/PlayerSearch.dart';
 import 'package:faceit_stats/api/MatchHistory.dart';
 import 'package:faceit_stats/helpers/RemoteConfigManager.dart';
 import 'package:faceit_stats/appBar.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 class HomePage extends StatefulWidget {
   static const routeName = '/';
@@ -64,53 +65,70 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
+  Widget _buildImage() {
+    return Container(
+      margin: EdgeInsets.only(
+        top: 50.0,
+        bottom: 20.0,
+      ),
+      child: SvgPicture.asset(
+        "assets/faceit_logo.svg",
+        semanticsLabel: "Faceit Logo",
+        color: Colors.deepOrange,
+      ),
+    );
+  }
+
   Widget searchSection() {
     return Expanded(
-      child: Container(
-        alignment: Alignment.center,
-        margin: EdgeInsets.symmetric(
-          horizontal: 30.0,
-        ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            TextField(
-              controller: userSearchInputController,
-              decoration: InputDecoration(
-                border: UnderlineInputBorder(),
-                labelText: "User ID",
-              ),
-            ),
-            SizedBox(
-              width: double.infinity,
-              child: RaisedButton(
-                child: Text(
-                  "Search",
+      child: SingleChildScrollView(
+        child: Container(
+          alignment: Alignment.center,
+          margin: EdgeInsets.symmetric(
+            horizontal: 30.0,
+          ),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              _buildImage(),
+              TextField(
+                controller: userSearchInputController,
+                decoration: InputDecoration(
+                  border: UnderlineInputBorder(),
+                  labelText: "User ID",
                 ),
-                onPressed: isLoaded ? searchUser : null,
               ),
-            ),
-            SizedBox(height: 20.0),
-            Text(
-              "Favourites",
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
+              SizedBox(
+                width: double.infinity,
+                child: RaisedButton(
+                  child: Text(
+                    "Search",
+                  ),
+                  onPressed: isLoaded ? searchUser : null,
+                ),
               ),
-            ),
-            SizedBox(height: 20.0),
-            favouritesLoaded
-                ? Container(
-                    height: 250.0,
-                    child: ListView.builder(
-                      itemCount: FavouritesManager.loadedFavourites.length,
-                      itemBuilder: (context, index) {
-                        return _buildFavouriteTile(
-                            FavouritesManager.loadedFavourites[index]);
-                      },
-                    ),
-                  )
-                : Container(),
-          ],
+              SizedBox(height: 20.0),
+              Text(
+                "Favourites",
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              SizedBox(height: 20.0),
+              favouritesLoaded
+                  ? Container(
+                      height: 250.0,
+                      child: ListView.builder(
+                        itemCount: FavouritesManager.loadedFavourites.length,
+                        itemBuilder: (context, index) {
+                          return _buildFavouriteTile(
+                              FavouritesManager.loadedFavourites[index]);
+                        },
+                      ),
+                    )
+                  : Container(),
+            ],
+          ),
         ),
       ),
     );
