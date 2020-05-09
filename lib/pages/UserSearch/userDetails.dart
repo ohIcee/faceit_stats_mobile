@@ -1,4 +1,5 @@
 import 'package:faceit_stats/api/MatchHistory.dart';
+import 'package:faceit_stats/helpers/FavouritesManager.dart';
 import 'package:faceit_stats/models/user.dart';
 import 'package:faceit_stats/pages/UserSearch/UserDetailsTab.dart';
 import 'package:faceit_stats/pages/UserSearch/UserMapStatsTab.dart';
@@ -20,6 +21,7 @@ class UserDetailPage extends StatefulWidget {
 class _UserDetailPageState extends State<UserDetailPage>
     with TickerProviderStateMixin {
   User _user;
+  bool favourited = false;
 
   final pageViewController = PageController(initialPage: 0);
   var currentPageValue = 0.0;
@@ -33,6 +35,10 @@ class _UserDetailPageState extends State<UserDetailPage>
         currentPageValue = pageViewController.page;
       });
     });
+  }
+
+  void checkIsFavourited() async {
+
   }
 
   @override

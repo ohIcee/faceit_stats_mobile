@@ -165,8 +165,35 @@ class UserDetailsTabState extends State<UserDetailsTab> {
       stat(csgoDetails.average_kd, "Average K/D Ratio"),
       stat(csgoDetails.avg_headshot, "Average Headshots %"),
       SizedBox(height: 30.0),
+      InkWell(
+        onTap: () {},
+        child: Container(
+          padding: EdgeInsets.symmetric(
+            vertical: 10.0,
+            horizontal: 10.0,
+          ),
+          width: 150.0,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              Icon(
+                Icons.favorite,
+                color: Theme.of(context).accentColor,
+              ),
+              SizedBox(width: 10.0),
+              Text(
+                "Favourite",
+                style: TextStyle(
+                  color: Theme.of(context).accentColor,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+      SizedBox(height: 30.0),
       Text(
-        "Links",
+        "User Links",
         style: TextStyle(
           color: Colors.white70,
         ),
@@ -211,7 +238,6 @@ class UserDetailsTabState extends State<UserDetailsTab> {
 
   void OpenSteamURL() async {
     var url = _user.getSteamURL;
-    print("Opening $url");
     if (await canLaunch(url)) {
       await launch(url);
     } else {
@@ -221,7 +247,6 @@ class UserDetailsTabState extends State<UserDetailsTab> {
 
   void OpenFaceItURL() async {
     var url = _user.getFaceItURL;
-    print("Opening $url");
     if (await canLaunch(url)) {
       await launch(url);
     } else {

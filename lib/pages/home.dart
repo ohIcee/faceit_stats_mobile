@@ -1,3 +1,4 @@
+import 'package:faceit_stats/helpers/FavouritesManager.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -20,6 +21,7 @@ class _HomePageState extends State<HomePage> {
   final userSearchInputController = TextEditingController();
 
   var isLoaded = false;
+  var favouritesLoaded = false;
 
   @override
   void initState() {
@@ -35,7 +37,11 @@ class _HomePageState extends State<HomePage> {
 
   void loadApp() async {
     await RemoteConfigManager.Init();
-    setState(() => isLoaded = true);
+    await FavouritesManager.Init();
+    setState(() {
+      isLoaded = true;
+      favouritesLoaded = true;
+    });
   }
 
   @override
@@ -79,6 +85,18 @@ class _HomePageState extends State<HomePage> {
                 onPressed: isLoaded ? searchUser : null,
               ),
             ),
+            Text("bruh"),
+            favouritesLoaded ? Container(
+              height: 250.0,
+              child: ListView.builder(
+                itemCount: FavouritesManager.loadedFavourites.length,
+                itemBuilder: (context, index) {
+                  return Text(
+                    FavouritesManager.loadedFavourites[index].nickname
+                  );
+                },
+              ),
+            ) : Container(),
           ],
         ),
       ),
