@@ -40,7 +40,7 @@ class PlayerSearch {
         decodedJSON["games"]["csgo"], CSGOdecodedJSON);
     // </ CSGO DETAILS >
 
-    _user.setCsgoDetails(_csgoDetails);
+    _user.setCsgoDetails = _csgoDetails;
 
     return _user;
   }

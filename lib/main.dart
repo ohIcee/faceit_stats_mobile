@@ -15,6 +15,10 @@ class MyApp extends StatefulWidget {
 class _AppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
+    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+      statusBarColor: Color.fromRGBO(255, 85, 0, 1),
+      systemNavigationBarColor: Color.fromRGBO(20, 22, 22, 1),
+    ));
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.portraitUp,
     ]);

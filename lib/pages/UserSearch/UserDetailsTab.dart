@@ -4,9 +4,12 @@ import 'package:faceit_stats/api/MatchHistory.dart';
 import 'package:faceit_stats/helpers/Rank.dart';
 import 'package:faceit_stats/models/CsgoDetails.dart';
 import 'package:faceit_stats/models/user.dart';
+import 'package:flutter/cupertino.dart';
 
 import 'package:flutter/material.dart';
 import 'package:charts_flutter/flutter.dart' as charts;
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class UserDetailsTab extends StatefulWidget {
   final currentPageValue;
@@ -30,7 +33,7 @@ class UserDetailsTabState extends State<UserDetailsTab> {
   }
 
   Widget _buildUserDetails() {
-    var currentELO = _user.getCsgoDetails().faceit_elo;
+    var currentELO = _user.getCsgoDetails.faceit_elo;
     var rank = Rank.eloToRank(currentELO);
     var neededELO = rank.neededELO;
     var maxELO = rank.maxELO;
@@ -79,7 +82,7 @@ class UserDetailsTabState extends State<UserDetailsTab> {
               ),
             ),
             SizedBox(height: 20.0),
-            recentResults(_user.getCsgoDetails().recent_results),
+            recentResults(_user.getCsgoDetails.recent_results),
             SizedBox(height: 20.0),
             Stack(
               children: <Widget>[
@@ -152,7 +155,7 @@ class UserDetailsTabState extends State<UserDetailsTab> {
   }
 
   Widget csgoInfo() {
-    CsgoDetails csgoDetails = _user.getCsgoDetails();
+    CsgoDetails csgoDetails = _user.getCsgoDetails;
 
     var stats = <Widget>[
       stat(csgoDetails.match_count, "Matches"),
@@ -161,6 +164,22 @@ class UserDetailsTabState extends State<UserDetailsTab> {
       stat(csgoDetails.current_win_streak, "Current Win Streak"),
       stat(csgoDetails.average_kd, "Average K/D Ratio"),
       stat(csgoDetails.avg_headshot, "Average Headshots %"),
+      SizedBox(height: 30.0),
+      Text(
+        "Links",
+        style: TextStyle(
+          color: Colors.white70,
+        ),
+      ),
+      SizedBox(height: 10.0),
+      Row(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: <Widget>[
+          _buildUrlIcon("assets/faceit_logo.svg", OpenFaceItURL),
+          _buildUrlIcon("assets/steam.svg", OpenSteamURL),
+        ],
+      ),
+      SizedBox(height: 20.0),
     ];
 
     return SizedBox(
@@ -170,6 +189,44 @@ class UserDetailsTabState extends State<UserDetailsTab> {
         ),
       ),
     );
+  }
+
+  Widget _buildUrlIcon(String svgIconPath, openFunction) {
+    return InkWell(
+      onTap: () => openFunction(),
+      child: Container(
+        padding: EdgeInsets.symmetric(
+          vertical: 10.0,
+          horizontal: 10.0,
+        ),
+        child: SvgPicture.asset(
+          svgIconPath,
+          height: 30.0,
+          width: 30.0,
+          color: Theme.of(context).accentColor,
+        ),
+      ),
+    );
+  }
+
+  void OpenSteamURL() async {
+    var url = _user.getSteamURL;
+    print("Opening $url");
+    if (await canLaunch(url)) {
+      await launch(url);
+    } else {
+      throw 'Could not launch $url';
+    }
+  }
+
+  void OpenFaceItURL() async {
+    var url = _user.getFaceItURL;
+    print("Opening $url");
+    if (await canLaunch(url)) {
+      await launch(url);
+    } else {
+      throw 'Could not launch $url';
+    }
   }
 
   Widget stat(dynamic value, String title) {

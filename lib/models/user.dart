@@ -6,6 +6,9 @@ class User {
   final String avatarImgLink;
   final String country;
   final String coverImgLink;
+  final String steam_id_64;
+  final String faceit_url;
+
   // ignore: non_constant_identifier_names
   CsgoDetails CSGODetails;
 
@@ -14,19 +17,29 @@ class User {
     this.nickname,
     this.avatarImgLink,
     this.country,
-    this.coverImgLink
+    this.coverImgLink,
+    this.steam_id_64,
+    this.faceit_url,
   });
 
-  void setCsgoDetails(CsgoDetails details) => CSGODetails = details;
-  CsgoDetails getCsgoDetails() => CSGODetails;
+  set setCsgoDetails(CsgoDetails details) => CSGODetails = details;
 
-  factory User.fromJson (Map<String, dynamic> parsedJSON) {
+  CsgoDetails get getCsgoDetails => CSGODetails;
+
+  String get getSteamURL =>
+      "http://steamcommunity.com/profiles/${this.steam_id_64}";
+
+  String get getFaceItURL => faceit_url.replaceAll("{lang}", "en");
+
+  factory User.fromJson(Map<String, dynamic> parsedJSON) {
     return User(
-        userID: parsedJSON["player_id"],
-        nickname: parsedJSON["nickname"],
-        avatarImgLink: parsedJSON["avatar"],
-        country: parsedJSON["country"],
-        coverImgLink: parsedJSON["cover_image"]
+      userID: parsedJSON["player_id"],
+      nickname: parsedJSON["nickname"],
+      avatarImgLink: parsedJSON["avatar"],
+      country: parsedJSON["country"],
+      coverImgLink: parsedJSON["cover_image"],
+      steam_id_64: parsedJSON["steam_id_64"],
+      faceit_url: parsedJSON["faceit_url"],
     );
   }
 }

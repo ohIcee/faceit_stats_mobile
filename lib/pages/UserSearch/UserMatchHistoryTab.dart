@@ -4,6 +4,7 @@ import 'package:faceit_stats/models/Match.dart';
 import 'package:faceit_stats/models/user.dart';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:time_formatter/time_formatter.dart';
 
 class UserMatchHistoryTab extends StatefulWidget {
@@ -207,6 +208,7 @@ class UserMatchHistoryTabState extends State<UserMatchHistoryTab> {
 
   void loadNextMatchHistory(int num) async {
     setState(() => isLoadingMatches = true);
+    HapticFeedback.vibrate();
     await MatchHistory.LoadNext(num);
     setState(() => isLoadingMatches = false);
   }

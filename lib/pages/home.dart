@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import 'package:faceit_stats/api/PlayerSearch.dart';
 import 'package:faceit_stats/api/MatchHistory.dart';
 import 'package:faceit_stats/helpers/RemoteConfigManager.dart';
+import 'package:faceit_stats/appBar.dart';
 
 class HomePage extends StatefulWidget {
   static const routeName = '/';
@@ -39,10 +41,11 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Color.fromRGBO(20, 22, 22, 1),
       body: SafeArea(
         child: Column(
           children: <Widget>[
-            appBar(),
+            CustomAppBar(),
             searchSection(),
           ],
         ),
@@ -83,6 +86,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future<void> searchUser() async {
+    HapticFeedback.selectionClick();
     setState(() => isLoaded = false);
     MatchHistory.ResetMatchHistory();
 
@@ -90,20 +94,7 @@ class _HomePageState extends State<HomePage> {
     await PlayerSearch.GetUserGameDetails(username, "csgo");
     await MatchHistory.LoadNext(20);
     setState(() => isLoaded = true);
+    HapticFeedback.vibrate();
     Navigator.pushNamed(context, '/userDetails');
-  }
-
-  Widget appBar() {
-    return Container(
-      alignment: Alignment.center,
-      height: 75.0,
-      child: Text(
-        "Faceit Stats",
-        style: TextStyle(
-          fontSize: 20.0,
-          fontWeight: FontWeight.w600,
-        ),
-      ),
-    );
   }
 }

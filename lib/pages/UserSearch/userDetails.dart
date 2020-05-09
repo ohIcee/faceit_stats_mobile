@@ -3,6 +3,7 @@ import 'package:faceit_stats/models/user.dart';
 import 'package:faceit_stats/pages/UserSearch/UserDetailsTab.dart';
 import 'package:faceit_stats/pages/UserSearch/UserMapStatsTab.dart';
 import 'package:faceit_stats/pages/UserSearch/UserMatchHistoryTab.dart';
+import 'package:faceit_stats/appBar.dart';
 
 import 'package:flutter/material.dart';
 
@@ -70,7 +71,7 @@ class _UserDetailPageState extends State<UserDetailPage>
   Widget topInfo() {
     return Column(
       children: <Widget>[
-        appBar(),
+        CustomAppBar(),
         AnimatedContainer(
           duration: Duration(milliseconds: 1000),
           height: ((1 - currentPageValue) * 200.0).clamp(100.0, 165.0),
@@ -135,19 +136,4 @@ class _UserDetailPageState extends State<UserDetailPage>
     );
   }
 
-  Widget appBar() {
-    return Container(
-      color: Color.fromRGBO(255, 85, 0, 1),
-      alignment: Alignment.center,
-      height: 50.0,
-      child: Text(
-        "FACEIT STATS",
-        style: TextStyle(
-          fontSize: 15.0,
-          fontWeight: FontWeight.bold,
-          color: Colors.black,
-        ),
-      ),
-    );
-  }
 }

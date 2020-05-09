@@ -65,10 +65,10 @@ class UserMapStatsTabState extends State<UserMapStatsTab> {
       padding: EdgeInsets.symmetric(
         horizontal: 20.0,
       ),
-      itemCount: _user.getCsgoDetails().map_stats.length,
+      itemCount: _user.getCsgoDetails.map_stats.length,
       physics: BouncingScrollPhysics(),
       itemBuilder: (context, index) {
-        var map = _user.getCsgoDetails().map_stats[index];
+        var map = _user.getCsgoDetails.map_stats[index];
         return _buildMapStatsCard(map);
       },
     );
