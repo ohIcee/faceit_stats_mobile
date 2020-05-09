@@ -108,17 +108,8 @@ class FavouritesManager {
     await file.writeAsString('$temp');
   }
 
-  static Future<bool> favouriteExists(String nickname) async {
-    // READ FAVOURITES AND DECODE THEM
-    var content = await readFavouriteRaw();
-    if (content == "" || content == null) {
-      debugPrint("Nothing to search.");
-      return false;
-    }
-    var decoded = jsonDecode(content);
-    List<dynamic> nicknames = decoded["favourites"];
-
-    return nicknames.any((nick) => nick["nickname"] == nickname);
+  static bool favouriteExists(String nickname) {
+    return loadedFavourites.any((e) => e.nickname == nickname);
   }
 
   static Future<String> readFavouriteRaw() async {

@@ -1,12 +1,11 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:faceit_stats/helpers/enums.dart';
 import 'package:http/http.dart' as http;
 
 import 'package:faceit_stats/models/Match.dart';
 import 'package:faceit_stats/api/PlayerSearch.dart';
 import 'package:faceit_stats/helpers/RemoteConfigManager.dart';
-
-enum API_RESPONSES { SUCCESS_RETRIEVE, NO_MORE_MATCHES, FAIL_RETRIEVE }
 
 class MatchHistory {
   static int _numMatchesLoaded = 0;

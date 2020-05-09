@@ -21,7 +21,6 @@ class UserDetailPage extends StatefulWidget {
 class _UserDetailPageState extends State<UserDetailPage>
     with TickerProviderStateMixin {
   User _user;
-  bool favourited = false;
 
   final pageViewController = PageController(initialPage: 0);
   var currentPageValue = 0.0;
@@ -29,16 +28,12 @@ class _UserDetailPageState extends State<UserDetailPage>
   @override
   void initState() {
     super.initState();
-
+    _user = MatchHistory.currentUser;
     pageViewController.addListener(() {
       setState(() {
         currentPageValue = pageViewController.page;
       });
     });
-  }
-
-  void checkIsFavourited() async {
-
   }
 
   @override
@@ -50,8 +45,6 @@ class _UserDetailPageState extends State<UserDetailPage>
 
   @override
   Widget build(BuildContext context) {
-    _user = MatchHistory.currentUser;
-
     return Scaffold(
       backgroundColor: Color.fromRGBO(20, 22, 22, 1),
       body: SafeArea(

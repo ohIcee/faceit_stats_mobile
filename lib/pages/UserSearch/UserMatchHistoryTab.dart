@@ -1,4 +1,5 @@
 import 'package:faceit_stats/api/MatchHistory.dart';
+import 'package:faceit_stats/helpers/enums.dart';
 import 'package:faceit_stats/models/Faction.dart';
 import 'package:faceit_stats/models/Match.dart';
 import 'package:faceit_stats/models/user.dart';

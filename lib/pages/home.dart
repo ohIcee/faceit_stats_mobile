@@ -1,4 +1,7 @@
 import 'package:faceit_stats/helpers/FavouritesManager.dart';
+import 'package:faceit_stats/helpers/enums.dart';
+import 'package:faceit_stats/models/Favourite.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -22,6 +25,7 @@ class _HomePageState extends State<HomePage> {
 
   var isLoaded = false;
   var favouritesLoaded = false;
+  final _scaffoldKey = new GlobalKey<ScaffoldState>();
 
   @override
   void initState() {
@@ -47,6 +51,7 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: _scaffoldKey,
       backgroundColor: Color.fromRGBO(20, 22, 22, 1),
       body: SafeArea(
         child: Column(
@@ -85,34 +90,78 @@ class _HomePageState extends State<HomePage> {
                 onPressed: isLoaded ? searchUser : null,
               ),
             ),
-            Text("bruh"),
-            favouritesLoaded ? Container(
-              height: 250.0,
-              child: ListView.builder(
-                itemCount: FavouritesManager.loadedFavourites.length,
-                itemBuilder: (context, index) {
-                  return Text(
-                    FavouritesManager.loadedFavourites[index].nickname
-                  );
-                },
+            SizedBox(height: 20.0),
+            Text(
+              "Favourites",
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
               ),
-            ) : Container(),
+            ),
+            SizedBox(height: 20.0),
+            favouritesLoaded
+                ? Container(
+                    height: 250.0,
+                    child: ListView.builder(
+                      itemCount: FavouritesManager.loadedFavourites.length,
+                      itemBuilder: (context, index) {
+                        return _buildFavouriteTile(
+                            FavouritesManager.loadedFavourites[index]);
+                      },
+                    ),
+                  )
+                : Container(),
           ],
         ),
       ),
     );
   }
 
-  Future<void> searchUser() async {
+  Widget _buildFavouriteTile(Favourite fav) {
+    return Card(
+      color: Colors.white10.withOpacity(.05),
+      elevation: 1.0,
+      child: InkWell(
+        onTap: () => searchUser(username: fav.nickname),
+        child: Container(
+          padding: EdgeInsets.symmetric(
+            vertical: 20.0,
+            horizontal: 20.0,
+          ),
+          child: Text(fav.nickname),
+        ),
+      ),
+    );
+  }
+
+  Future<void> searchUser({String username}) async {
     HapticFeedback.selectionClick();
     setState(() => isLoaded = false);
     MatchHistory.ResetMatchHistory();
 
-    var username = userSearchInputController.text;
-    await PlayerSearch.GetUserGameDetails(username, "csgo");
+    if (username == null) var username = userSearchInputController.text;
+    var response = await PlayerSearch.GetUserGameDetails(username, "csgo");
+    if (response == null) {
+      if (PlayerSearch.lastAPIResponse == API_RESPONSES.CSGO_NOT_FOUND)
+        showSnackbar("User does not have any CSGO information");
+      else if (PlayerSearch.lastAPIResponse == API_RESPONSES.FAIL_RETRIEVE)
+        showSnackbar("User does not exist");
+
+      setState(() {
+        isLoaded = true;
+      });
+      return;
+    }
     await MatchHistory.LoadNext(20);
     setState(() => isLoaded = true);
     HapticFeedback.vibrate();
     Navigator.pushNamed(context, '/userDetails');
+  }
+
+  void showSnackbar(String text) {
+    _scaffoldKey.currentState.showSnackBar(
+      SnackBar(
+        content: Text(text),
+      ),
+    );
   }
 }

@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:faceit_stats/api/MatchHistory.dart';
+import 'package:faceit_stats/helpers/FavouritesManager.dart';
 import 'package:faceit_stats/helpers/Rank.dart';
 import 'package:faceit_stats/models/CsgoDetails.dart';
 import 'package:faceit_stats/models/user.dart';
@@ -23,10 +24,19 @@ class UserDetailsTab extends StatefulWidget {
 class UserDetailsTabState extends State<UserDetailsTab> {
   User _user;
   var currentPageValue;
+  bool isFavourited = false;
+
+  @override
+  void initState() {
+    _user = MatchHistory.currentUser;
+    setState(() {
+      isFavourited = FavouritesManager.favouriteExists(_user.nickname);
+    });
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
-    _user = MatchHistory.currentUser;
     currentPageValue = widget.currentPageValue;
 
     return _buildUserDetails();
@@ -166,7 +176,7 @@ class UserDetailsTabState extends State<UserDetailsTab> {
       stat(csgoDetails.avg_headshot, "Average Headshots %"),
       SizedBox(height: 30.0),
       InkWell(
-        onTap: () {},
+        onTap: () => ToggleFavourite(),
         child: Container(
           padding: EdgeInsets.symmetric(
             vertical: 10.0,
@@ -177,12 +187,12 @@ class UserDetailsTabState extends State<UserDetailsTab> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
               Icon(
-                Icons.favorite,
+                isFavourited ? Icons.favorite : Icons.favorite_border,
                 color: Theme.of(context).accentColor,
               ),
               SizedBox(width: 10.0),
               Text(
-                "Favourite",
+                isFavourited ? "Unfavourite" : "Favourite",
                 style: TextStyle(
                   color: Theme.of(context).accentColor,
                 ),
@@ -216,6 +226,15 @@ class UserDetailsTabState extends State<UserDetailsTab> {
         ),
       ),
     );
+  }
+
+  void ToggleFavourite() async {
+    isFavourited
+        ? await FavouritesManager.removeFavourite(_user.nickname)
+        : await FavouritesManager.addFavourite(_user.nickname);
+    setState(() {
+      isFavourited = !isFavourited;
+    });
   }
 
   Widget _buildUrlIcon(String svgIconPath, openFunction) {
