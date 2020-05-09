@@ -18,7 +18,6 @@ class UserDetailsTab extends StatefulWidget {
 }
 
 class UserDetailsTabState extends State<UserDetailsTab> {
-
   User _user;
   var currentPageValue;
 
@@ -37,10 +36,10 @@ class UserDetailsTabState extends State<UserDetailsTab> {
     var maxELO = rank.maxELO;
 
     int currentGraphELOValue =
-    (((currentELO - neededELO) * 100) / (maxELO - neededELO)).round();
+        (((currentELO - neededELO) * 100) / (maxELO - neededELO)).round();
     if (currentELO > 2000)
       currentGraphELOValue =
-      100; // Fixes graph if player is > 2000 ELO (rank 10)
+          100; // Fixes graph if player is > 2000 ELO (rank 10)
     int difference = 100 - currentGraphELOValue;
 
     var data = [
@@ -250,7 +249,6 @@ class UserDetailsTabState extends State<UserDetailsTab> {
       children: list,
     );
   }
-
 }
 
 class ELO {
@@ -261,5 +259,5 @@ class ELO {
 
   ELO(this.rank, this.playerELO, Color color)
       : this.color = new charts.Color(
-      r: color.red, g: color.green, b: color.blue, a: color.alpha);
+            r: color.red, g: color.green, b: color.blue, a: color.alpha);
 }

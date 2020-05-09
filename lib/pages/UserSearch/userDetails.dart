@@ -1,6 +1,7 @@
 import 'package:faceit_stats/api/MatchHistory.dart';
 import 'package:faceit_stats/models/user.dart';
 import 'package:faceit_stats/pages/UserSearch/UserDetailsTab.dart';
+import 'package:faceit_stats/pages/UserSearch/UserMapStatsTab.dart';
 import 'package:faceit_stats/pages/UserSearch/UserMatchHistoryTab.dart';
 
 import 'package:flutter/material.dart';
@@ -51,14 +52,13 @@ class _UserDetailPageState extends State<UserDetailPage>
           children: <Widget>[
             topInfo(),
             Expanded(
-              child: PageView.builder(
+              child: PageView(
                 controller: pageViewController,
-                itemBuilder: (context, position) {
-                  return position == 0
-                      ? UserDetailsTab(currentPageValue)
-                      : UserMatchHistoryTab();
-                },
-                itemCount: 2,
+                children: <Widget>[
+                  UserDetailsTab(currentPageValue),
+                  UserMatchHistoryTab(),
+                  UserMapStatsTab(),
+                ],
               ),
             ),
           ],
@@ -113,7 +113,7 @@ class _UserDetailPageState extends State<UserDetailPage>
                       ),
                       width: (currentPageValue * 150.0).clamp(0.0, 150.0),
                       child: Opacity(
-                        opacity: currentPageValue,
+                        opacity: currentPageValue.clamp(0.0, 1.0),
                         child: Text(
                           _user.nickname,
                           overflow: TextOverflow.ellipsis,

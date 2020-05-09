@@ -7,7 +7,6 @@ import 'package:flutter/material.dart';
 import 'package:time_formatter/time_formatter.dart';
 
 class UserMatchHistoryTab extends StatefulWidget {
-
   UserMatchHistoryTab({Key key}) : super(key: key);
 
   @override
@@ -15,7 +14,6 @@ class UserMatchHistoryTab extends StatefulWidget {
 }
 
 class UserMatchHistoryTabState extends State<UserMatchHistoryTab> {
-
   final matchHistoryListKey = PageStorageKey('MatchHistoryList');
   User _user;
   bool isLoadingMatches = false;
@@ -57,6 +55,14 @@ class UserMatchHistoryTabState extends State<UserMatchHistoryTab> {
           bottom: 0,
           child: Icon(
             Icons.chevron_left,
+          ),
+        ),
+        Positioned(
+          right: 0,
+          top: 0,
+          bottom: 0,
+          child: Icon(
+            Icons.chevron_right,
           ),
         ),
       ],
@@ -125,7 +131,7 @@ class UserMatchHistoryTabState extends State<UserMatchHistoryTab> {
                         fontWeight: FontWeight.bold,
                         fontSize: 17.0,
                         color: "faction${userFaction.faction_num}" ==
-                            match.winning_faction
+                                match.winning_faction
                             ? Colors.green
                             : Colors.red,
                       ),
@@ -173,30 +179,30 @@ class UserMatchHistoryTabState extends State<UserMatchHistoryTab> {
   Widget _buildMatchHistoryLoader() {
     return isLoadingMatches
         ? Row(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: <Widget>[
-        SizedBox(
-          width: 20.0,
-          height: 20.0,
-          child: CircularProgressIndicator(),
-        ),
-        SizedBox(
-          width: 10.0,
-        ),
-        Text("Loading...")
-      ],
-    )
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: <Widget>[
+              SizedBox(
+                width: 20.0,
+                height: 20.0,
+                child: CircularProgressIndicator(),
+              ),
+              SizedBox(
+                width: 10.0,
+              ),
+              Text("Loading...")
+            ],
+          )
         : MatchHistory.lastAPIResponse != API_RESPONSES.NO_MORE_MATCHES
-        ? RaisedButton(
-      onPressed: () => loadNextMatchHistory(20),
-      child: Text(
-        "Load more...",
-        style: TextStyle(
-          fontWeight: FontWeight.bold,
-        ),
-      ),
-    )
-        : Text("No more matches to retrieve...");
+            ? RaisedButton(
+                onPressed: () => loadNextMatchHistory(20),
+                child: Text(
+                  "Load more...",
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              )
+            : Text("No more matches to retrieve...");
   }
 
   void loadNextMatchHistory(int num) async {

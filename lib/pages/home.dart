@@ -86,7 +86,6 @@ class _HomePageState extends State<HomePage> {
     setState(() => isLoaded = false);
     MatchHistory.ResetMatchHistory();
 
-    print("Searching user " + userSearchInputController.text);
     var username = userSearchInputController.text;
     await PlayerSearch.GetUserGameDetails(username, "csgo");
     await MatchHistory.LoadNext(20);

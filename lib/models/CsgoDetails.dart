@@ -1,4 +1,5 @@
 import 'package:faceit_stats/models/GameDetails.dart';
+import 'package:faceit_stats/models/MapStats.dart';
 
 class CsgoDetails extends GameDetails {
   final String win_rate;
@@ -9,6 +10,7 @@ class CsgoDetails extends GameDetails {
   final String longest_win_streak;
   final String match_count;
   final String win_count;
+  final List<MapStats> map_stats;
 
   CsgoDetails({
     String game_id,
@@ -27,11 +29,19 @@ class CsgoDetails extends GameDetails {
     this.longest_win_streak,
     this.match_count,
     this.win_count,
+    this.map_stats,
   }) : super(game_profile_id, region, skill_level_label, game_player_id,
             skill_level, faceit_elo, game_player_name);
 
   factory CsgoDetails.fromJson(
       Map<String, dynamic> playerStats, Map<String, dynamic> playerGameStats) {
+    List<dynamic> maps = playerGameStats["segments"];
+    List<MapStats> MapsStats = new List<MapStats>();
+    maps.forEach((stats) {
+      Map<String, dynamic> _stats = stats;
+      MapsStats.add(MapStats.fromJson(_stats));
+    });
+
     return CsgoDetails(
         game_id: playerGameStats["lifetime"]["game_id"],
         game_profile_id: playerStats["game_profile_id"],
@@ -48,6 +58,7 @@ class CsgoDetails extends GameDetails {
         avg_headshot: playerGameStats["lifetime"]["Average Headshots %"],
         longest_win_streak: playerGameStats["lifetime"]["Longest Win Streak"],
         match_count: playerGameStats["lifetime"]["Matches"],
-        win_count: playerGameStats["lifetime"]["Wins"]);
+        win_count: playerGameStats["lifetime"]["Wins"],
+        map_stats: MapsStats);
   }
 }
