@@ -1,9 +1,9 @@
-import 'package:faceit_stats/api/MatchHistory.dart';
-import 'package:faceit_stats/helpers/RemoteConfigManager.dart';
 import 'package:flutter/material.dart';
 
 import 'package:faceit_stats/api/PlayerSearch.dart';
 import 'package:faceit_stats/models/user.dart';
+import 'package:faceit_stats/api/MatchHistory.dart';
+import 'package:faceit_stats/helpers/RemoteConfigManager.dart';
 
 class HomePage extends StatefulWidget {
   static const routeName = '/';
@@ -22,7 +22,7 @@ class _HomePageState extends State<HomePage> {
 
   @override
   void initState() {
-    LoadApp();
+    loadApp();
     super.initState();
   }
 
@@ -32,7 +32,7 @@ class _HomePageState extends State<HomePage> {
     super.dispose();
   }
 
-  void LoadApp() async {
+  void loadApp() async {
     await RemoteConfigManager.Init();
     setState(() => isLoaded = true);
   }
@@ -41,12 +41,13 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
-          child: Column(
-        children: <Widget>[
-          appBar(),
-          searchSection(),
-        ],
-      )),
+        child: Column(
+          children: <Widget>[
+            appBar(),
+            searchSection(),
+          ],
+        ),
+      ),
     );
   }
 
@@ -73,7 +74,7 @@ class _HomePageState extends State<HomePage> {
                 child: Text(
                   "Search",
                 ),
-                onPressed: isLoaded ? SearchUser : null,
+                onPressed: isLoaded ? searchUser : null,
               ),
             ),
           ],
@@ -82,17 +83,16 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Future<void> SearchUser() async {
+  Future<void> searchUser() async {
     setState(() => isLoaded = false);
     MatchHistory.ResetMatchHistory();
 
     print("Searching user " + userSearchInputController.text);
     var username = userSearchInputController.text;
     User user = await PlayerSearch.GetUserGameDetails(username, "csgo");
-    await MatchHistory.LoadNext(2);
+    await MatchHistory.LoadNext(20);
     setState(() => isLoaded = true);
-    Navigator.pushNamed(context, '/userDetails',
-        arguments: user);
+    Navigator.pushNamed(context, '/userDetails', arguments: user);
   }
 
   Widget appBar() {

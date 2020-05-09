@@ -1,12 +1,10 @@
 import 'dart:convert';
 import 'dart:io';
-import 'package:faceit_stats/api/MatchHistory.dart';
-import 'package:faceit_stats/models/CsgoDetails.dart';
-import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
 import 'package:faceit_stats/helpers/RemoteConfigManager.dart';
 import 'package:faceit_stats/models/user.dart';
+import 'package:faceit_stats/models/CsgoDetails.dart';
 
 class PlayerSearch {
 

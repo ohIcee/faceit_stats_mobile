@@ -1,16 +1,18 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:http/http.dart' as http;
 
 import 'package:faceit_stats/models/Match.dart';
 import 'package:faceit_stats/api/PlayerSearch.dart';
 import 'package:faceit_stats/helpers/RemoteConfigManager.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:http/http.dart' as http;
+
+enum API_RESPONSES { SUCCESS_RETRIEVE, NO_MORE_MATCHES, FAIL_RETRIEVE }
 
 class MatchHistory {
   static int _numMatchesLoaded = 0;
   static var currentUser = PlayerSearch.currentSearchedUser;
   static List<Match> loadedMatches = new List<Match>();
+  static API_RESPONSES lastAPIResponse;
 
   static void ResetMatchHistory() {
     _numMatchesLoaded = 0;
@@ -26,7 +28,6 @@ class MatchHistory {
       "offset": _numMatchesLoaded.toString(),
       "limit": num.toString()
     };
-    _numMatchesLoaded += num;
 
     var uri = Uri.https("open.faceit.com",
         "data/v4/players/${currentUser.userID}/history", queryParams);
@@ -38,7 +39,11 @@ class MatchHistory {
     var decodedJSON = jsonDecode(response.body);
     List<dynamic> matchesJSON = decodedJSON["items"];
 
-    if (matchesJSON.length <= 0) return null;
+    if (matchesJSON == null || matchesJSON.length <= 0) {
+      if (response.statusCode == 200) lastAPIResponse = API_RESPONSES.NO_MORE_MATCHES;
+      else lastAPIResponse = API_RESPONSES.FAIL_RETRIEVE;
+      return null;
+    }
 
     // call /matches/{match_id}/stats for each match
     // and save responses to list
@@ -72,6 +77,8 @@ class MatchHistory {
       loadedMatches.add(match);
     }
 
+    lastAPIResponse = API_RESPONSES.SUCCESS_RETRIEVE;
+    _numMatchesLoaded += num;
     return true;
   }
 }

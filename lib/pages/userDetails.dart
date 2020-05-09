@@ -5,11 +5,11 @@ import 'package:faceit_stats/helpers/Rank.dart';
 import 'package:faceit_stats/models/Faction.dart';
 import 'package:faceit_stats/models/Match.dart';
 import 'package:faceit_stats/models/CsgoDetails.dart';
+import 'package:faceit_stats/models/user.dart';
+
 import 'package:flutter/material.dart';
 import 'package:charts_flutter/flutter.dart' as charts;
 import 'package:time_formatter/time_formatter.dart';
-
-import '../models/user.dart';
 
 class UserDetailPage extends StatefulWidget {
   static const routeName = '/userDetails';
@@ -79,7 +79,38 @@ class _UserDetailPageState extends State<UserDetailPage>
     );
   }
 
+  Widget _buildMatchHistoryLoader() {
+    return isLoadingMatches
+        ? Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: <Widget>[
+              SizedBox(
+                width: 20.0,
+                height: 20.0,
+                child: CircularProgressIndicator(),
+              ),
+              SizedBox(
+                width: 10.0,
+              ),
+              Text("Loading...")
+            ],
+          )
+        : MatchHistory.lastAPIResponse != API_RESPONSES.NO_MORE_MATCHES
+            ? RaisedButton(
+                onPressed: () => loadNextMatchHistory(20),
+                child: Text(
+                  "Load more...",
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              )
+            : Text("No more matches to retrieve...");
+  }
+
   Widget _buildMatchHistory() {
+    // TODO ANIMATED LIST VIEW
+    // animate list items into view on load
     return ListView.builder(
       key: matchHistoryListKey,
       padding: EdgeInsets.symmetric(
@@ -94,30 +125,7 @@ class _UserDetailPageState extends State<UserDetailPage>
             margin: EdgeInsets.only(
               bottom: 20.0,
             ),
-            child: isLoadingMatches
-                ? Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: <Widget>[
-                      SizedBox(
-                        width: 20.0,
-                        height: 20.0,
-                        child: CircularProgressIndicator(),
-                      ),
-                      SizedBox(
-                        width: 10.0,
-                      ),
-                      Text("Loading...")
-                    ],
-                  )
-                : RaisedButton(
-                    onPressed: () => loadNextMatchHistory(2),
-                    child: Text(
-                      "Load more...",
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
+            child: _buildMatchHistoryLoader(),
           );
         } else {
           var match = MatchHistory.loadedMatches[index];
