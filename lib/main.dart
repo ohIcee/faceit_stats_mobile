@@ -3,7 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import 'package:faceit_stats/pages/home.dart';
-import 'package:faceit_stats/pages/userDetails.dart';
+import 'package:faceit_stats/pages/UserSearch/userDetails.dart';
 
 void main() => runApp(MyApp());
 

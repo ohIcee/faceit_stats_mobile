@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 import 'package:faceit_stats/api/PlayerSearch.dart';
-import 'package:faceit_stats/models/user.dart';
 import 'package:faceit_stats/api/MatchHistory.dart';
 import 'package:faceit_stats/helpers/RemoteConfigManager.dart';
 
@@ -89,10 +88,10 @@ class _HomePageState extends State<HomePage> {
 
     print("Searching user " + userSearchInputController.text);
     var username = userSearchInputController.text;
-    User user = await PlayerSearch.GetUserGameDetails(username, "csgo");
+    await PlayerSearch.GetUserGameDetails(username, "csgo");
     await MatchHistory.LoadNext(20);
     setState(() => isLoaded = true);
-    Navigator.pushNamed(context, '/userDetails', arguments: user);
+    Navigator.pushNamed(context, '/userDetails');
   }
 
   Widget appBar() {
