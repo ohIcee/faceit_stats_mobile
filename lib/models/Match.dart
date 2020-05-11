@@ -1,5 +1,7 @@
 import 'package:faceit_stats/models/Faction.dart';
 import 'package:faceit_stats/models/FactionPlayer.dart';
+import 'package:faceit_stats/models/PlayerMatchStats.dart';
+import 'package:flutter/material.dart';
 
 class Match {
   final String match_id;
@@ -82,19 +84,59 @@ class Match {
           element["faceit_url"]));
     });
 
+    // Retrieve match team stats
+    var _teams = matchDetailsJSON["teams"];
+    var faction1_team = _teams[0]["team_id"] == faction1_json["team_id"]
+        ? _teams[0]
+        : _teams[1];
+    var faction2_team = _teams[0]["team_id"] == faction2_json["team_id"]
+        ? _teams[0]
+        : _teams[1];
+    var faction1_team_stats_json = faction1_team["team_stats"];
+    var faction2_team_stats_json = faction2_team["team_stats"];
+
+    // Retrieve stats for players of match
+    List<dynamic> faction1_player_stats_json =
+        faction1_team["players"];
+    List<dynamic> faction2_player_stats_json =
+        faction2_team["players"];
+    var faction1_players_match_stats = new List<PlayerMatchStats>();
+    var faction2_players_match_stats = new List<PlayerMatchStats>();
+
+    faction1_player_stats_json.forEach(
+        (e) => faction1_players_match_stats.add(PlayerMatchStats.fromJson(e)));
+    faction2_player_stats_json.forEach(
+            (e) => faction2_players_match_stats.add(PlayerMatchStats.fromJson(e)));
+
     var faction1 = new Faction(
-        faction_num: 1,
-        team_id: faction1_json["team_id"],
-        avatar: faction1_json["avatar"],
-        nickname: faction1_json["nickname"],
-        players: faction1_players);
+      faction_num: 1,
+      team_id: faction1_json["team_id"],
+      avatar: faction1_json["avatar"],
+      nickname: faction1_json["nickname"],
+      players: faction1_players,
+      final_score: faction1_team_stats_json["Final Score"],
+      first_half_score: faction1_team_stats_json["First Half Score"],
+      overtime_score: faction1_team_stats_json["Overtime score"],
+      premade: faction1_team["premade"],
+      second_half_score: faction1_team_stats_json["Second Half Score"],
+      team_headshot: faction1_team_stats_json["Team Headshot"],
+      player_stats: faction1_players_match_stats,
+    );
 
     var faction2 = new Faction(
-        faction_num: 2,
-        team_id: faction2_json["team_id"],
-        avatar: faction2_json["avatar"],
-        nickname: faction2_json["nickname"],
-        players: faction2_players);
+      faction_num: 2,
+      team_id: faction2_json["team_id"],
+      avatar: faction2_json["avatar"],
+      nickname: faction2_json["nickname"],
+      players: faction2_players,
+      final_score: faction2_team_stats_json["Final Score"],
+      first_half_score: faction2_team_stats_json["First Half Score"],
+      overtime_score: faction2_team_stats_json["Overtime score"],
+      premade: faction2_team["premade"],
+      second_half_score: faction2_team_stats_json["Second Half Score"],
+      team_headshot: faction2_team_stats_json["Team Headshot"],
+      player_stats: faction2_players_match_stats,
+    );
 
     return Match(
         match_id: parsedJSON["match_id"],

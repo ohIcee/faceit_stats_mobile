@@ -73,15 +73,21 @@ class _HomePageState extends State<HomePage> {
         left: 90.0,
         right: 90.0,
       ),
-      child: SvgPicture.asset(
-        "assets/faceit_logo.svg",
-        semanticsLabel: "Faceit Logo",
-        color: Colors.deepOrange,
+      child: Image.asset(
+        "assets/FS_ICON.png",
       ),
     );
   }
 
   Widget searchSection() {
+    var favList = <Widget>[];
+    if (favouritesLoaded) {
+      var favourites = List<Favourite>();
+      FavouritesManager.loadedFavourites.forEach((e) => favourites
+          .add(Favourite(nickname: e.nickname, avatarUrl: e.avatarUrl)));
+      favourites.forEach((e) => favList.add(_buildFavouriteTile(e)));
+    }
+
     return Expanded(
       child: SingleChildScrollView(
         child: Container(
@@ -97,7 +103,7 @@ class _HomePageState extends State<HomePage> {
                 controller: userSearchInputController,
                 decoration: InputDecoration(
                   border: UnderlineInputBorder(),
-                  labelText: "User ID",
+                  labelText: "User Nickname",
                 ),
               ),
               SizedBox(
@@ -116,23 +122,16 @@ class _HomePageState extends State<HomePage> {
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              SizedBox(height: 20.0),
-              favouritesLoaded
-                  ? Container(
-                      height: 250.0,
-                      child: FavouritesManager.loadedFavourites.length > 0
-                          ? ListView.builder(
-                              physics: BouncingScrollPhysics(),
-                              itemCount:
-                                  FavouritesManager.loadedFavourites.length,
-                              itemBuilder: (context, index) {
-                                return _buildFavouriteTile(
-                                    FavouritesManager.loadedFavourites[index]);
-                              },
-                            )
-                          : Text("No favourites!"),
-                    )
-                  : Text("Loading favourites..."),
+              SizedBox(height: 10.0),
+              Container(
+                child: favouritesLoaded
+                    ? FavouritesManager.loadedFavourites.length > 0
+                        ? Column(
+                            children: favList,
+                          )
+                        : Text("No favourites!")
+                    : Text("Loading favourites..."),
+              ),
             ],
           ),
         ),
@@ -142,8 +141,9 @@ class _HomePageState extends State<HomePage> {
 
   Widget _buildFavouriteTile(Favourite fav) {
     return Card(
-      color: Colors.white10.withOpacity(.05),
-      elevation: 1.0,
+      //color: Colors.white10.withOpacity(.05),
+      color: Colors.transparent,
+      elevation: 0.0,
       child: InkWell(
         onTap: () => searchUser(username: fav.nickname),
         child: Container(
@@ -180,6 +180,7 @@ class _HomePageState extends State<HomePage> {
                 onPressed: () => unFavourite(fav.nickname),
                 icon: Icon(
                   Icons.favorite,
+                  color: Theme.of(context).accentColor,
                 ),
               ),
             ],
@@ -195,6 +196,8 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future<void> searchUser({String username}) async {
+    if (isLoaded == false) return;
+
     HapticFeedback.selectionClick();
     setState(() => isLoaded = false);
     MatchHistory.ResetMatchHistory();

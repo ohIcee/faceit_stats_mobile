@@ -13,6 +13,8 @@ class MatchHistory {
   static List<Match> loadedMatches = new List<Match>();
   static API_RESPONSES lastAPIResponse;
 
+  static Match getMatchByID(String id) => loadedMatches.firstWhere((e) => e.match_id == id);
+
   static void ResetMatchHistory() {
     _numMatchesLoaded = 0;
     loadedMatches = new List<Match>();

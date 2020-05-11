@@ -1,3 +1,4 @@
+import 'package:faceit_stats/pages/UserSearch/MatchDetailPage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -38,6 +39,7 @@ class _AppState extends State<MyApp> {
       routes: {
         HomePage.routeName: (context) => HomePage(),
         UserDetailPage.routeName: (context) => UserDetailPage(),
+        MatchDetailPage.routeName: (context) => MatchDetailPage(),
       },
     );
   }

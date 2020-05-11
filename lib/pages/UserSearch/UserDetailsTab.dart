@@ -9,6 +9,7 @@ import 'package:flutter/cupertino.dart';
 
 import 'package:flutter/material.dart';
 import 'package:charts_flutter/flutter.dart' as charts;
+import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -25,6 +26,7 @@ class UserDetailsTabState extends State<UserDetailsTab> {
   User _user;
   var currentPageValue;
   bool isFavourited = false;
+  var chartAnimationDuration = Duration(milliseconds: 500);
 
   @override
   void initState() {
@@ -101,6 +103,7 @@ class UserDetailsTabState extends State<UserDetailsTab> {
                   child: charts.PieChart(
                     series,
                     animate: false,
+                    animationDuration: chartAnimationDuration,
                     defaultRenderer: new charts.ArcRendererConfig(
                       arcWidth: 30,
                       strokeWidthPx: 0.0,
@@ -229,6 +232,7 @@ class UserDetailsTabState extends State<UserDetailsTab> {
   }
 
   void ToggleFavourite() async {
+    HapticFeedback.selectionClick();
     isFavourited
         ? await FavouritesManager.removeFavourite(_user.nickname)
         : await FavouritesManager.addFavourite(_user.nickname, _user.avatarImgLink);
@@ -256,6 +260,7 @@ class UserDetailsTabState extends State<UserDetailsTab> {
   }
 
   void OpenSteamURL() async {
+    HapticFeedback.selectionClick();
     var url = _user.getSteamURL;
     if (await canLaunch(url)) {
       await launch(url);
@@ -265,6 +270,7 @@ class UserDetailsTabState extends State<UserDetailsTab> {
   }
 
   void OpenFaceItURL() async {
+    HapticFeedback.selectionClick();
     var url = _user.getFaceItURL;
     if (await canLaunch(url)) {
       await launch(url);

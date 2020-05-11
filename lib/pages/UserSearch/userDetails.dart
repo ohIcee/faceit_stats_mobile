@@ -111,7 +111,8 @@ class _UserDetailPageState extends State<UserDetailPage>
                         left: 20.0,
                       ),
                       width: (currentPageValue * 150.0).clamp(0.0, 150.0),
-                      child: Opacity(
+                      child: AnimatedOpacity(
+                        duration: Duration(milliseconds: 200),
                         opacity: currentPageValue.clamp(0.0, 1.0),
                         child: Text(
                           _user.nickname,

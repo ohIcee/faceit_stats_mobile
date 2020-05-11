@@ -3,10 +3,12 @@ import 'package:faceit_stats/helpers/enums.dart';
 import 'package:faceit_stats/models/Faction.dart';
 import 'package:faceit_stats/models/Match.dart';
 import 'package:faceit_stats/models/user.dart';
+import 'package:flutter/cupertino.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:time_formatter/time_formatter.dart';
+import 'package:intl/intl.dart';
 
 class UserMatchHistoryTab extends StatefulWidget {
   UserMatchHistoryTab({Key key}) : super(key: key);
@@ -80,6 +82,10 @@ class UserMatchHistoryTabState extends State<UserMatchHistoryTab> {
       });
     });
 
+    var matchTime =
+        DateTime.fromMillisecondsSinceEpoch(match.finished_at * 1000);
+    var formattedMatchTime = new DateFormat("dd MMM - HH:mm").format(matchTime);
+
     return Container(
       width: double.infinity,
       height: 120.0,
@@ -87,68 +93,93 @@ class UserMatchHistoryTabState extends State<UserMatchHistoryTab> {
       margin: EdgeInsets.only(
         bottom: 10.0,
       ),
-      child: IntrinsicHeight(
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: <Widget>[
-            Container(
-              width: 120.0,
-              child: Image.asset(
-                'assets/map_images/${match.map}.jpg',
-                fit: BoxFit.cover,
-              ),
-            ),
-            Expanded(
-              child: Container(
-                padding: EdgeInsets.symmetric(
-                  vertical: 10.0,
-                  horizontal: 15.0,
+      child: InkWell(
+        onTap: () => showMatchDetails(match.match_id),
+        child: IntrinsicHeight(
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: <Widget>[
+              Container(
+                width: 120.0,
+                child: Hero(
+                  tag: match.match_id,
+                  child: Image.asset(
+                    'assets/map_images/${match.map}.jpg',
+                    fit: BoxFit.cover,
+                  ),
                 ),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: <Widget>[
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: <Widget>[
-                        Text(
-                          match.map.toUpperCase(),
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 17.0,
+              ),
+              Expanded(
+                child: Container(
+                  padding: EdgeInsets.symmetric(
+                    vertical: 10.0,
+                    horizontal: 15.0,
+                  ),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: <Widget>[
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: <Widget>[
+                          Text(
+                            match.map.toUpperCase(),
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 17.0,
+                            ),
                           ),
-                        ),
-                        Text(
-                          match.game_mode,
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 17.0,
+                          Text(
+                            match.game_mode,
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 17.0,
+                            ),
                           ),
-                        ),
-                      ],
-                    ),
-                    Text(
-                      "SCORE ${match.score}",
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 17.0,
-                        color: "faction${userFaction.faction_num}" ==
-                                match.winning_faction
-                            ? Colors.green
-                            : Colors.red,
+                        ],
                       ),
-                    ),
-                    Text(
-                      formatTime(match.finished_at * 1000),
-                    ),
-                  ],
+                      Text(
+                        "SCORE ${match.score}",
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 17.0,
+                          color: "faction${userFaction.faction_num}" ==
+                                  match.winning_faction
+                              ? Colors.green
+                              : Colors.red,
+                        ),
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: <Widget>[
+                          Text(
+                            formatTime(match.finished_at * 1000),
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          SizedBox(width: 10.0),
+                          Text(
+                            formattedMatchTime,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                              color: Colors.white.withOpacity(.5),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
+  }
+
+  void showMatchDetails(String matchID) {
+    HapticFeedback.vibrate();
+    Navigator.pushNamed(context, '/matchDetails', arguments: matchID);
   }
 
   Widget _buildMatchHistory() {
