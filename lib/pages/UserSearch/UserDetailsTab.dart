@@ -4,7 +4,9 @@ import 'package:faceit_stats/api/MatchHistory.dart';
 import 'package:faceit_stats/helpers/FavouritesManager.dart';
 import 'package:faceit_stats/helpers/Rank.dart';
 import 'package:faceit_stats/models/CsgoDetails.dart';
+import 'package:faceit_stats/models/KDHistory.dart';
 import 'package:faceit_stats/models/user.dart';
+import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/cupertino.dart';
 
 import 'package:flutter/material.dart';
@@ -71,6 +73,15 @@ class UserDetailsTabState extends State<UserDetailsTab> {
         data: data,
       )
     ];
+
+    List<Color> gradientColors = [
+      Colors.deepOrange,
+      Colors.orangeAccent,
+    ];
+    List<FlSpot> KDFlSpots = new List<FlSpot>();
+    KDHistory.kdr.asMap().forEach((index, value) {
+      KDFlSpots.add(FlSpot(index.toDouble(), value));
+    });
 
     return Stack(
       children: <Widget>[
@@ -152,6 +163,53 @@ class UserDetailsTabState extends State<UserDetailsTab> {
                 ),
               ],
             ),
+            SizedBox(height: 20.0),
+            Container(
+              margin: EdgeInsets.symmetric(horizontal: 40.0),
+              height: 150.0,
+              child: LineChart(
+                LineChartData(
+                  titlesData: FlTitlesData(
+                    show: true,
+                    bottomTitles: SideTitles(
+                      textStyle: TextStyle(
+                        color: Colors.white,
+                      ),
+                      showTitles: true,
+                    ),
+                    leftTitles: SideTitles(
+                      textStyle: TextStyle(
+                        color: Colors.white,
+                      ),
+                      showTitles: true,
+                    ),
+                  ),
+                  gridData: FlGridData(
+                      show: true,
+                      drawVerticalLine: false,
+                      drawHorizontalLine: true,
+                      getDrawingHorizontalLine: (value) {
+                        return FlLine(
+                          color: Colors.deepOrange,
+                          strokeWidth: 2.0,
+                        );
+                      }),
+                  lineBarsData: <LineChartBarData>[
+                    LineChartBarData(
+                        isCurved: true,
+                        isStrokeCapRound: true,
+                        belowBarData: BarAreaData(
+                          show: true,
+                          colors: gradientColors
+                              .map((color) => color.withOpacity(0.3))
+                              .toList(),
+                        ),
+                        spots: KDFlSpots),
+                  ],
+                ),
+              ),
+            ),
+            SizedBox(height: 20.0),
             csgoInfo(),
           ],
         ),
@@ -235,7 +293,8 @@ class UserDetailsTabState extends State<UserDetailsTab> {
     HapticFeedback.selectionClick();
     isFavourited
         ? await FavouritesManager.removeFavourite(_user.nickname)
-        : await FavouritesManager.addFavourite(_user.nickname, _user.avatarImgLink);
+        : await FavouritesManager.addFavourite(
+            _user.nickname, _user.avatarImgLink);
     setState(() {
       isFavourited = !isFavourited;
     });

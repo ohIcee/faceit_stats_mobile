@@ -1,8 +1,11 @@
 import 'package:faceit_stats/api/MatchHistory.dart';
 import 'package:faceit_stats/helpers/enums.dart';
 import 'package:faceit_stats/models/Faction.dart';
+import 'package:faceit_stats/models/KDHistory.dart';
 import 'package:faceit_stats/models/Match.dart';
 import 'package:faceit_stats/models/user.dart';
+import 'package:faceit_stats/pages/UserSearch/MatchDetailPage.dart';
+import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/cupertino.dart';
 
 import 'package:flutter/material.dart';
@@ -19,6 +22,7 @@ class UserMatchHistoryTab extends StatefulWidget {
 
 class UserMatchHistoryTabState extends State<UserMatchHistoryTab> {
   final matchHistoryListKey = PageStorageKey('MatchHistoryList');
+  final GlobalKey<AnimatedListState> matchHistoryAnimatedListKey = GlobalKey();
   User _user;
   bool isLoadingMatches = false;
 
@@ -47,9 +51,7 @@ class UserMatchHistoryTabState extends State<UserMatchHistoryTab> {
                     letterSpacing: .7),
               ),
             ),
-            SizedBox(
-              height: 20.0,
-            ),
+            SizedBox(height: 20.0),
             Expanded(child: _buildMatchHistory()),
           ],
         ),
@@ -180,19 +182,33 @@ class UserMatchHistoryTabState extends State<UserMatchHistoryTab> {
   void showMatchDetails(String matchID) {
     HapticFeedback.vibrate();
     Navigator.pushNamed(context, '/matchDetails', arguments: matchID);
+//    Navigator.push(
+//      context,
+//      PageRouteBuilder(
+//          transitionDuration: Duration(seconds: 2),
+//          pageBuilder: (_, __, ___) => MatchDetailPage()
+//      ),
+//    );
+
+//    Navigator.of(context).push(
+//      PageRouteBuilder(
+//        transitionDuration: Duration(seconds: 1),
+//        pageBuilder: (_, __, ___) => MatchDetailPage(),
+//      ),
+//    );
   }
 
   Widget _buildMatchHistory() {
     // TODO ANIMATED LIST VIEW
     // animate list items into view on load
-    return ListView.builder(
-      key: matchHistoryListKey,
+    return AnimatedList(
+      key: matchHistoryAnimatedListKey,
       padding: EdgeInsets.symmetric(
         horizontal: 20.0,
       ),
-      itemCount: MatchHistory.loadedMatches.length + 1,
+      initialItemCount: MatchHistory.loadedMatches.length + 1,
       physics: BouncingScrollPhysics(),
-      itemBuilder: (context, index) {
+      itemBuilder: (context, index, animation) {
         if (index == MatchHistory.loadedMatches.length) {
           return Container(
             height: 50.0,

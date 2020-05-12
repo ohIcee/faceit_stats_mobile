@@ -1,3 +1,5 @@
+import 'package:faceit_stats/api/MatchHistory.dart';
+import 'package:faceit_stats/models/KDHistory.dart';
 import 'package:flutter/material.dart';
 
 class PlayerMatchStats {
@@ -34,6 +36,11 @@ class PlayerMatchStats {
 
   factory PlayerMatchStats.fromJson(Map<String, dynamic> parsedJSON) {
     Map<String, dynamic> stats = parsedJSON["player_stats"];
+
+    // Add match KDR to KD History for graph
+    if (MatchHistory.currentUser.nickname == parsedJSON["nickname"] &&
+        !KDHistory.maxReached)
+      KDHistory.addKDR(double.parse(stats["K/D Ratio"]));
 
     return PlayerMatchStats(
       player_id: parsedJSON["player_id"],

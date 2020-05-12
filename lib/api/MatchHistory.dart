@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:faceit_stats/helpers/enums.dart';
+import 'package:faceit_stats/models/KDHistory.dart';
 import 'package:http/http.dart' as http;
 
 import 'package:faceit_stats/models/Match.dart';
@@ -18,9 +19,10 @@ class MatchHistory {
   static void ResetMatchHistory() {
     _numMatchesLoaded = 0;
     loadedMatches = new List<Match>();
+    KDHistory.resetStats();
   }
 
-  static Future<bool> LoadNext(int num) async {
+  static Future<List<Match>> LoadNext(int num) async {
     currentUser = PlayerSearch.currentSearchedUser;
 
     var queryParams = {
@@ -73,13 +75,15 @@ class MatchHistory {
     // TODO Convert this for loop into a loop that matches
     // match_id's together
     // (if matches don't get retrieved in order)
+    var newMatches = List<Match>();
     for (var i = 0; i < matchesJSON.length; i++) {
       var match = Match.fromJson(matchesJSON[i], matchesDetails[i]);
       loadedMatches.add(match);
+      newMatches.add(match);
     }
 
     lastAPIResponse = API_RESPONSES.SUCCESS_RETRIEVE;
     _numMatchesLoaded += num;
-    return true;
+    return newMatches;
   }
 }

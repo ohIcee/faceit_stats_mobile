@@ -1,4 +1,5 @@
 import 'package:faceit_stats/api/MatchHistory.dart';
+import 'package:faceit_stats/models/KDHistory.dart';
 import 'package:faceit_stats/models/user.dart';
 import 'package:faceit_stats/pages/UserSearch/UserDetailsTab.dart';
 import 'package:faceit_stats/pages/UserSearch/UserMapStatsTab.dart';

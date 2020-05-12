@@ -9,7 +9,6 @@ import 'package:faceit_stats/api/PlayerSearch.dart';
 import 'package:faceit_stats/api/MatchHistory.dart';
 import 'package:faceit_stats/helpers/RemoteConfigManager.dart';
 import 'package:faceit_stats/appBar.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 
 class HomePage extends StatefulWidget {
   static const routeName = '/';
