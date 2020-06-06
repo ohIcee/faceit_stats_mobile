@@ -179,20 +179,6 @@ class UserMatchHistoryTabState extends State<UserMatchHistoryTab> {
   void showMatchDetails(String matchID) {
     HapticFeedback.vibrate();
     Navigator.pushNamed(context, '/matchDetails', arguments: matchID);
-//    Navigator.push(
-//      context,
-//      PageRouteBuilder(
-//          transitionDuration: Duration(seconds: 2),
-//          pageBuilder: (_, __, ___) => MatchDetailPage()
-//      ),
-//    );
-
-//    Navigator.of(context).push(
-//      PageRouteBuilder(
-//        transitionDuration: Duration(seconds: 1),
-//        pageBuilder: (_, __, ___) => MatchDetailPage(),
-//      ),
-//    );
   }
 
   Widget _buildMatchHistory() {
