@@ -26,9 +26,6 @@ class MatchHistory {
   static Future<List<Match>> LoadNext() async {
     currentUser = PlayerSearch.currentSearchedUser;
 
-    debugPrint("Offset: " + _numMatchesLoaded.toString());
-    debugPrint("Limit: " + (_numMatchesLoaded == 0 ? 20.toString() : (_numMatchesLoaded * 2).toString()));
-
     var queryParams = {
       "nickname": currentUser.userID.toString(),
       "game": "csgo",
@@ -47,7 +44,6 @@ class MatchHistory {
     var decodedJSON = jsonDecode(response.body);
     List<dynamic> matchesJSON = decodedJSON["items"];
 
-    debugPrint(response.body);
     if (matchesJSON == null || matchesJSON.length <= 0) {
       if (response.statusCode == 200) lastAPIResponse = API_RESPONSES.NO_MORE_MATCHES;
       else lastAPIResponse = API_RESPONSES.FAIL_RETRIEVE;

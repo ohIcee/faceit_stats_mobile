@@ -153,14 +153,15 @@ class UserMatchHistoryTabState extends State<UserMatchHistoryTab> {
                           Text(
                             formatTime(match.finished_at * 1000),
                             overflow: TextOverflow.ellipsis,
+                            style: TextStyle(fontSize: 12.0),
                           ),
                           SizedBox(width: 10.0),
                           Text(
                             formattedMatchTime,
                             overflow: TextOverflow.ellipsis,
                             style: TextStyle(
-                              color: Colors.white.withOpacity(.5),
-                            ),
+                                color: Colors.white.withOpacity(.5),
+                                fontSize: 12.0),
                           ),
                         ],
                       ),

@@ -85,7 +85,6 @@ class FavouritesManager {
         .forEach((usr) => favs.add(Favourite(nickname: usr["nickname"], avatarUrl: usr["avatarUrl"])));
 
     loadedFavourites = favs;
-    debugPrint("load");
     refreshNeeded = false;
   }
 
