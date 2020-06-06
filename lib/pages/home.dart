@@ -30,6 +30,7 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     loadApp();
+
     super.initState();
   }
 
@@ -214,10 +215,15 @@ class _HomePageState extends State<HomePage> {
       });
       return;
     }
-    await MatchHistory.LoadNext(20);
+    await MatchHistory.LoadNext();
     setState(() => isLoaded = true);
     HapticFeedback.vibrate();
-    Navigator.pushNamed(context, '/userDetails');
+    await Navigator.pushNamed(context, '/userDetails');
+
+    // If we need to refresh the favourites, set state
+    // to refresh page data
+    // (Executes after coming back from userDetails page)
+    if (FavouritesManager.refreshNeeded) setState(() {});
   }
 
   void showSnackbar(String text) {

@@ -1,12 +1,8 @@
 import 'package:faceit_stats/api/MatchHistory.dart';
 import 'package:faceit_stats/helpers/enums.dart';
 import 'package:faceit_stats/models/Faction.dart';
-import 'package:faceit_stats/models/KDHistory.dart';
 import 'package:faceit_stats/models/Match.dart';
 import 'package:faceit_stats/models/user.dart';
-import 'package:faceit_stats/pages/UserSearch/MatchDetailPage.dart';
-import 'package:fl_chart/fl_chart.dart';
-import 'package:flutter/cupertino.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -243,7 +239,7 @@ class UserMatchHistoryTabState extends State<UserMatchHistoryTab> {
           )
         : MatchHistory.lastAPIResponse != API_RESPONSES.NO_MORE_MATCHES
             ? RaisedButton(
-                onPressed: () => loadNextMatchHistory(20),
+                onPressed: () => loadNextMatchHistory(),
                 child: Text(
                   "Load more...",
                   style: TextStyle(
@@ -254,10 +250,17 @@ class UserMatchHistoryTabState extends State<UserMatchHistoryTab> {
             : Text("No more matches to retrieve...");
   }
 
-  void loadNextMatchHistory(int num) async {
+  void loadNextMatchHistory() async {
     setState(() => isLoadingMatches = true);
     HapticFeedback.vibrate();
-    await MatchHistory.LoadNext(num);
+    var newMatches = await MatchHistory.LoadNext();
+
+    if (newMatches != null) {
+      newMatches.asMap().forEach((index, element) {
+        matchHistoryAnimatedListKey.currentState.insertItem(index);
+      });
+    }
+
     setState(() => isLoadingMatches = false);
   }
 }

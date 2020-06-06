@@ -10,6 +10,10 @@ class FavouritesManager {
   static String filePath;
   static File file;
 
+  // Declares if we need to retrieve favourites the next time
+  // we load home.dart
+  static bool refreshNeeded = false;
+
   static List<Favourite> loadedFavourites;
 
   static Future<void> Init() async {
@@ -57,6 +61,7 @@ class FavouritesManager {
 
     await file.writeAsString('$temp');
     await loadFavourites();
+    refreshNeeded = true;
   }
 
   static Future<void> Clear() async {
@@ -80,6 +85,8 @@ class FavouritesManager {
         .forEach((usr) => favs.add(Favourite(nickname: usr["nickname"], avatarUrl: usr["avatarUrl"])));
 
     loadedFavourites = favs;
+    debugPrint("load");
+    refreshNeeded = false;
   }
 
   static Future<void> removeFavourite(String nickname) async {

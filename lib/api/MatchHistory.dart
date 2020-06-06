@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:faceit_stats/helpers/enums.dart';
 import 'package:faceit_stats/models/KDHistory.dart';
+import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 
 import 'package:faceit_stats/models/Match.dart';
@@ -22,14 +23,18 @@ class MatchHistory {
     KDHistory.resetStats();
   }
 
-  static Future<List<Match>> LoadNext(int num) async {
+  static Future<List<Match>> LoadNext() async {
     currentUser = PlayerSearch.currentSearchedUser;
+
+    debugPrint("Offset: " + _numMatchesLoaded.toString());
+    debugPrint("Limit: " + (_numMatchesLoaded == 0 ? 20.toString() : (_numMatchesLoaded * 2).toString()));
 
     var queryParams = {
       "nickname": currentUser.userID.toString(),
       "game": "csgo",
-      "offset": _numMatchesLoaded.toString(),
-      "limit": num.toString()
+      "offset": _numMatchesLoaded == 0 ? 20.toString() : (_numMatchesLoaded * 2).toString(),
+      "limit": _numMatchesLoaded.toString(),
+      "from": "1546300800"
     };
 
     var uri = Uri.https("open.faceit.com",
@@ -42,6 +47,7 @@ class MatchHistory {
     var decodedJSON = jsonDecode(response.body);
     List<dynamic> matchesJSON = decodedJSON["items"];
 
+    debugPrint(response.body);
     if (matchesJSON == null || matchesJSON.length <= 0) {
       if (response.statusCode == 200) lastAPIResponse = API_RESPONSES.NO_MORE_MATCHES;
       else lastAPIResponse = API_RESPONSES.FAIL_RETRIEVE;
@@ -52,24 +58,34 @@ class MatchHistory {
     // and save responses to list
     List<http.Response> matchStats = await Future.wait(
       matchesJSON.map(
-        (match) => http.get(
-            Uri.https(
-                "open.faceit.com",
-                "data/v4/matches/${match["match_id"]}/stats",
-                {"match_id": match["match_id"]}),
-            headers: {
-              HttpHeaders.authorizationHeader:
-                  "Bearer " + RemoteConfigManager.getConfigValue("faceit_api"),
-              HttpHeaders.contentTypeHeader: "application/json",
-            }),
+        (match) async {
+          var res = await http.get(
+              Uri.https(
+                  "open.faceit.com",
+                  "data/v4/matches/${match["match_id"]}/stats",
+                  {"match_id": match["match_id"]}),
+              headers: {
+                HttpHeaders.authorizationHeader:
+                "Bearer " + RemoteConfigManager.getConfigValue("faceit_api"),
+                HttpHeaders.contentTypeHeader: "application/json",
+              });
+          return res;
+        }
       ),
     );
 
     List<Map<String, dynamic>> matchesDetails =
         new List<Map<String, dynamic>>();
-    matchStats.forEach((response) {
+
+    matchStats.asMap().forEach((index, response) {
       Map<String, dynamic> matchJSON = jsonDecode(response.body);
-      matchesDetails.add(matchJSON["rounds"][0]);
+
+      // If the match successfully retrieved,
+      // add it to map, otherwise remove it from the
+      // matches array
+      if (matchJSON["rounds"] != null) {
+        matchesDetails.add(matchJSON["rounds"][0]);
+      } else matchesJSON.removeAt(index);
     });
 
     // TODO Convert this for loop into a loop that matches
@@ -83,7 +99,7 @@ class MatchHistory {
     }
 
     lastAPIResponse = API_RESPONSES.SUCCESS_RETRIEVE;
-    _numMatchesLoaded += num;
+    _numMatchesLoaded += matchesJSON.length;
     return newMatches;
   }
 }

@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:faceit_stats/api/MatchHistory.dart';
 import 'package:faceit_stats/models/KDHistory.dart';
 import 'package:faceit_stats/models/user.dart';
@@ -82,10 +83,16 @@ class _UserDetailPageState extends State<UserDetailPage>
                 child: AnimatedOpacity(
                   duration: Duration(milliseconds: 700),
                   curve: Curves.easeOutCubic,
-                  child: Image.network(
-                    _user.coverImgLink,
-                    fit: BoxFit.cover,
-                  ),
+                  child: _user.coverImgLink != ""
+                      ? CachedNetworkImage(
+                          imageUrl: _user.coverImgLink,
+                          fit: BoxFit.cover,
+                          placeholder: (context, url) =>
+                              LinearProgressIndicator(),
+                          errorWidget: (context, url, error) =>
+                              Icon(Icons.error),
+                        )
+                      : Container(),
                   opacity: (1 - currentPageValue).clamp(.35, .8),
                 ),
               ),
@@ -101,9 +108,15 @@ class _UserDetailPageState extends State<UserDetailPage>
                         width:
                             ((1 - currentPageValue) * 150.0).clamp(80.0, 130.0),
                         curve: Curves.easeOutCubic,
-                        child: Image.network(
-                          _user.avatarImgLink,
+                        child: CachedNetworkImage(
+                          imageUrl: _user.avatarImgLink != ""
+                              ? _user.avatarImgLink
+                              : "assets/default_avatar.png",
                           fit: BoxFit.fill,
+                          placeholder: (context, url) =>
+                              CircularProgressIndicator(),
+                          errorWidget: (context, url, error) =>
+                              Icon(Icons.error),
                         ),
                       ),
                     ),
@@ -135,5 +148,4 @@ class _UserDetailPageState extends State<UserDetailPage>
       ],
     );
   }
-
 }

@@ -29,6 +29,7 @@ dependencies:
   url_launcher: any
   flutter_svg: ^0.17.4
   fl_chart: ^0.9.4
+  cached_network_image: ^2.2.0+1
 
 dev_dependencies:
   flutter_test:

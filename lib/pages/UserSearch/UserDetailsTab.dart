@@ -79,7 +79,7 @@ class UserDetailsTabState extends State<UserDetailsTab> {
       Colors.orangeAccent,
     ];
     List<FlSpot> KDFlSpots = new List<FlSpot>();
-    KDHistory.kdr.asMap().forEach((index, value) {
+    KDHistory.kdr.reversed.toList().asMap().forEach((index, value) {
       KDFlSpots.add(FlSpot(index.toDouble(), value));
     });
 
@@ -164,51 +164,74 @@ class UserDetailsTabState extends State<UserDetailsTab> {
               ],
             ),
             SizedBox(height: 20.0),
-            Container(
-              margin: EdgeInsets.symmetric(horizontal: 40.0),
-              height: 150.0,
-              child: LineChart(
-                LineChartData(
-                  titlesData: FlTitlesData(
-                    show: true,
-                    bottomTitles: SideTitles(
-                      textStyle: TextStyle(
-                        color: Colors.white,
+
+            // If there is no entries in KDHistory, don't
+            // show the graph
+            KDHistory.kdr.length > 0
+                ? Column(
+                    children: <Widget>[
+                      Container(
+                        margin: EdgeInsets.symmetric(horizontal: 40.0),
+                        child: Text(
+                          "K/D History - Last ${KDHistory.maxNumMatches} matches",
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
                       ),
-                      showTitles: true,
-                    ),
-                    leftTitles: SideTitles(
-                      textStyle: TextStyle(
-                        color: Colors.white,
+                      SizedBox(height: 20.0),
+                      Container(
+                        margin: EdgeInsets.symmetric(horizontal: 40.0),
+                        height: 150.0,
+                        child: LineChart(
+                          LineChartData(
+                            titlesData: FlTitlesData(
+                              show: true,
+                              bottomTitles: SideTitles(
+                                textStyle: TextStyle(
+                                  color: Colors.white,
+                                ),
+                                showTitles: false,
+                              ),
+                              leftTitles: SideTitles(
+                                textStyle: TextStyle(
+                                  color: Colors.white,
+                                ),
+                                showTitles: true,
+                              ),
+                            ),
+                            gridData: FlGridData(
+                                show: true,
+                                drawVerticalLine: false,
+                                drawHorizontalLine: true,
+                                getDrawingHorizontalLine: (value) {
+                                  return FlLine(
+                                    color: Colors.deepOrange,
+                                    strokeWidth: 2.0,
+                                  );
+                                }),
+                            lineBarsData: <LineChartBarData>[
+                              LineChartBarData(
+                                  isCurved: true,
+                                  isStrokeCapRound: true,
+                                  belowBarData: BarAreaData(
+                                    show: true,
+                                    colors: gradientColors
+                                        .map((color) => color.withOpacity(0.3))
+                                        .toList(),
+                                  ),
+                                  spots: KDFlSpots),
+                            ],
+                          ),
+                        ),
                       ),
-                      showTitles: true,
+                    ],
+                  )
+                : Container(
+                    margin: EdgeInsets.symmetric(horizontal: 40.0),
+                    child: Text(
+                      "Not enough data for K/D History",
+                      style: TextStyle(color: Colors.grey),
                     ),
                   ),
-                  gridData: FlGridData(
-                      show: true,
-                      drawVerticalLine: false,
-                      drawHorizontalLine: true,
-                      getDrawingHorizontalLine: (value) {
-                        return FlLine(
-                          color: Colors.deepOrange,
-                          strokeWidth: 2.0,
-                        );
-                      }),
-                  lineBarsData: <LineChartBarData>[
-                    LineChartBarData(
-                        isCurved: true,
-                        isStrokeCapRound: true,
-                        belowBarData: BarAreaData(
-                          show: true,
-                          colors: gradientColors
-                              .map((color) => color.withOpacity(0.3))
-                              .toList(),
-                        ),
-                        spots: KDFlSpots),
-                  ],
-                ),
-              ),
-            ),
             SizedBox(height: 20.0),
             csgoInfo(),
           ],
