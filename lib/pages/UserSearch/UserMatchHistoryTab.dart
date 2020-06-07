@@ -1,4 +1,5 @@
 import 'package:faceit_stats/api/MatchHistory.dart';
+import 'package:faceit_stats/helpers/adManager.dart';
 import 'package:faceit_stats/helpers/enums.dart';
 import 'package:faceit_stats/models/Faction.dart';
 import 'package:faceit_stats/models/Match.dart';
@@ -6,11 +7,15 @@ import 'package:faceit_stats/models/user.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_native_admob/flutter_native_admob.dart';
+import 'package:flutter_native_admob/native_admob_options.dart';
 import 'package:time_formatter/time_formatter.dart';
 import 'package:intl/intl.dart';
 
 class UserMatchHistoryTab extends StatefulWidget {
-  UserMatchHistoryTab({Key key}) : super(key: key);
+  final listKey;
+
+  UserMatchHistoryTab({Key key, this.listKey}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() => UserMatchHistoryTabState();
@@ -18,7 +23,6 @@ class UserMatchHistoryTab extends StatefulWidget {
 
 class UserMatchHistoryTabState extends State<UserMatchHistoryTab> {
   final matchHistoryListKey = PageStorageKey('MatchHistoryList');
-  final GlobalKey<AnimatedListState> matchHistoryAnimatedListKey = GlobalKey();
   User _user;
   bool isLoadingMatches = false;
 
@@ -181,17 +185,36 @@ class UserMatchHistoryTabState extends State<UserMatchHistoryTab> {
     Navigator.pushNamed(context, '/matchDetails', arguments: matchID);
   }
 
+  Widget _buildAd() {
+    return NativeAdmob(
+      controller: adManager.randomController,
+      adUnitID: "ca-app-pub-3940256099942544/2247696110",
+      loading: LinearProgressIndicator(),
+      options: NativeAdmobOptions(
+        adLabelTextStyle: NativeTextStyle(color: Colors.black),
+        headlineTextStyle: NativeTextStyle(color: Colors.white),
+        ratingColor: Colors.white,
+        advertiserTextStyle: NativeTextStyle(color: Colors.white),
+        bodyTextStyle: NativeTextStyle(color: Colors.white),
+        callToActionStyle: NativeTextStyle(color: Colors.white),
+        priceTextStyle: NativeTextStyle(color: Colors.white),
+        storeTextStyle: NativeTextStyle(color: Colors.white),
+      ),
+    );
+  }
+
   Widget _buildMatchHistory() {
     // TODO ANIMATED LIST VIEW
     // animate list items into view on load
-    return AnimatedList(
-      key: matchHistoryAnimatedListKey,
+    return ListView.builder(
+      addAutomaticKeepAlives: true,
+      key: matchHistoryListKey,
       padding: EdgeInsets.symmetric(
         horizontal: 20.0,
       ),
-      initialItemCount: MatchHistory.loadedMatches.length + 1,
+      itemCount: MatchHistory.loadedMatches.length + 1,
       physics: BouncingScrollPhysics(),
-      itemBuilder: (context, index, animation) {
+      itemBuilder: (context, index) {
         if (index == MatchHistory.loadedMatches.length) {
           return Container(
             height: 50.0,
@@ -202,7 +225,22 @@ class UserMatchHistoryTabState extends State<UserMatchHistoryTab> {
           );
         } else {
           var match = MatchHistory.loadedMatches[index];
-          return _buildMatchHistoryCard(match);
+
+          if (index != 0 && index % 4 == 0) {
+            // show ad
+            return Column(
+              children: <Widget>[
+                Container(
+                    height: 200.0,
+                    color: Colors.white10.withOpacity(.05),
+                    child: _buildAd()),
+                SizedBox(height: 10.0),
+                _buildMatchHistoryCard(match),
+              ],
+            );
+          } else {
+            return _buildMatchHistoryCard(match);
+          }
         }
       },
     );
@@ -240,13 +278,7 @@ class UserMatchHistoryTabState extends State<UserMatchHistoryTab> {
   void loadNextMatchHistory() async {
     setState(() => isLoadingMatches = true);
     HapticFeedback.vibrate();
-    var newMatches = await MatchHistory.LoadNext();
-
-    if (newMatches != null) {
-      newMatches.asMap().forEach((index, element) {
-        matchHistoryAnimatedListKey.currentState.insertItem(index);
-      });
-    }
+    await MatchHistory.LoadNext();
 
     setState(() => isLoadingMatches = false);
   }

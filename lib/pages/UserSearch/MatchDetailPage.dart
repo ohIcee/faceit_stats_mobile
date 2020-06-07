@@ -1,12 +1,13 @@
 import 'package:faceit_stats/api/MatchHistory.dart';
 import 'package:faceit_stats/models/Match.dart';
-import 'package:faceit_stats/appBar.dart';
 import 'package:faceit_stats/models/Faction.dart';
 import 'package:faceit_stats/models/PlayerMatchStats.dart';
 import 'package:faceit_stats/models/user.dart';
+import 'package:faceit_stats/appBar.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:show_up_animation/show_up_animation.dart';
 
 class MatchDetailPage extends StatefulWidget {
   static const routeName = '/matchDetails';
@@ -21,6 +22,7 @@ class _MatchDetailPageState extends State<MatchDetailPage> {
   String _matchID;
   Match _match;
   User _user;
+  int playersShowupDelay = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -40,12 +42,13 @@ class _MatchDetailPageState extends State<MatchDetailPage> {
         DateTime.fromMillisecondsSinceEpoch(_match.finished_at * 1000);
     var formattedMatchTime = new DateFormat("dd MMM - HH:mm").format(matchTime);
     return Scaffold(
-      backgroundColor: Color.fromRGBO(20, 22, 22, 1),
+      appBar: MainAppBar(appBar: AppBar()),
+      backgroundColor: Colors.black,
       body: SafeArea(
         child: SingleChildScrollView(
           child: Column(
             children: <Widget>[
-              CustomAppBar(backButton: true),
+//              CustomAppBar(backButton: true),
               Hero(
                 tag: _match.match_id,
                 child: Container(
@@ -58,13 +61,19 @@ class _MatchDetailPageState extends State<MatchDetailPage> {
                 ),
               ),
               SizedBox(height: 20.0),
-              Text(
-                "Match Details",
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 23.0,
-                    letterSpacing: .7),
+              ShowUpAnimation(
+                animationDuration: Duration(milliseconds: 0),
+                curve: Curves.fastOutSlowIn,
+                direction: Direction.vertical,
+                offset: 0.5,
+                child: Text(
+                  "Match Details",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 23.0,
+                      letterSpacing: .7),
+                ),
               ),
               Text(
                 "SCORE ${_match.score}",
@@ -79,21 +88,27 @@ class _MatchDetailPageState extends State<MatchDetailPage> {
                 ),
               ),
               SizedBox(height: 10.0),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  Icon(
-                    Icons.access_time,
-                    size: 18.0,
-                  ),
-                  SizedBox(width: 10.0),
-                  Text(
-                    formattedMatchTime,
-                    style: TextStyle(
-                      fontSize: 16.0,
+              ShowUpAnimation(
+                animationDuration: Duration(milliseconds: 500),
+                curve: Curves.fastOutSlowIn,
+                direction: Direction.vertical,
+                offset: 0.5,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    Icon(
+                      Icons.access_time,
+                      size: 18.0,
                     ),
-                  ),
-                ],
+                    SizedBox(width: 10.0),
+                    Text(
+                      formattedMatchTime,
+                      style: TextStyle(
+                        fontSize: 16.0,
+                      ),
+                    ),
+                  ],
+                ),
               ),
               SizedBox(height: 10.0),
               Divider(thickness: 1.5),
@@ -124,7 +139,10 @@ class _MatchDetailPageState extends State<MatchDetailPage> {
 
   Widget _buildFactionPlayers(Faction faction) {
     var players = <Widget>[];
-    faction.player_stats.forEach((e) => players.add(_buildPlayerTile(e)));
+    faction.player_stats.forEach((e) {
+      players.add(_buildPlayerTile(e, playersShowupDelay));
+      playersShowupDelay += 80;
+    });
 
     return Container(
       margin: EdgeInsets.symmetric(horizontal: 50.0, vertical: 10.0),
@@ -181,36 +199,43 @@ class _MatchDetailPageState extends State<MatchDetailPage> {
     );
   }
 
-  Widget _buildPlayerTile(PlayerMatchStats stats) {
-    return Container(
-      height: 50.0,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: <Widget>[
-          Expanded(
-            child: Text(
-              stats.nickname,
-              style: TextStyle(fontWeight: FontWeight.bold),
+  Widget _buildPlayerTile(PlayerMatchStats stats, int delay) {
+    return ShowUpAnimation(
+      delayStart: Duration(milliseconds: delay),
+      animationDuration: Duration(milliseconds: 500),
+      curve: Curves.fastOutSlowIn,
+      direction: Direction.vertical,
+      offset: 0.5,
+      child: Container(
+        height: 50.0,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            Expanded(
+              child: Text(
+                stats.nickname,
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
             ),
-          ),
-          Expanded(
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: <Widget>[
-                Text(
-                  stats.kills,
-                  style: TextStyle(fontWeight: FontWeight.bold),
-                ),
-                Text(stats.assists),
-                Text(
-                  stats.deaths,
-                  style: TextStyle(fontWeight: FontWeight.bold),
-                ),
-                Text(stats.mvp_count),
-              ],
+            Expanded(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: <Widget>[
+                  Text(
+                    stats.kills,
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  Text(stats.assists),
+                  Text(
+                    stats.deaths,
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  Text(stats.mvp_count),
+                ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

@@ -14,7 +14,7 @@ class FavouritesManager {
   // we load home.dart
   static bool refreshNeeded = false;
 
-  static List<Favourite> loadedFavourites;
+  static List<Favourite> loadedFavourites = new List<Favourite>();
 
   static Future<void> Init() async {
     loadedFavourites = new List<Favourite>();

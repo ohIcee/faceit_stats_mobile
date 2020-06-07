@@ -1,4 +1,8 @@
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:faceit_stats/appBar.dart';
 import 'package:faceit_stats/helpers/FavouritesManager.dart';
+import 'package:faceit_stats/helpers/adManager.dart';
+import 'package:faceit_stats/helpers/analytics.dart';
 import 'package:faceit_stats/helpers/enums.dart';
 import 'package:faceit_stats/models/Favourite.dart';
 import 'package:flutter/cupertino.dart';
@@ -7,8 +11,7 @@ import 'package:flutter/services.dart';
 
 import 'package:faceit_stats/api/PlayerSearch.dart';
 import 'package:faceit_stats/api/MatchHistory.dart';
-import 'package:faceit_stats/helpers/RemoteConfigManager.dart';
-import 'package:faceit_stats/appBar.dart';
+import 'package:gdpr_dialog/gdpr_dialog.dart';
 
 class HomePage extends StatefulWidget {
   static const routeName = '/';
@@ -23,13 +26,23 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   final userSearchInputController = TextEditingController();
 
-  var isLoaded = false;
-  var favouritesLoaded = false;
+  var isLoaded = true;
   final _scaffoldKey = new GlobalKey<ScaffoldState>();
 
   @override
   void initState() {
-    loadApp();
+    // ask for advertisement consent
+    GdprDialog.instance
+        .showDialog(
+            'pub-2111344032223404', 'https://plus1s.com/privacy-policy/',
+            isForTest: true, testDeviceId: 'ab')
+        .then((onValue) {
+      if (onValue) {
+        analytics.fb_analytics.setAnalyticsCollectionEnabled(onValue);
+      }
+    });
+
+    GdprDialog.instance.getConsentStatus().then((value) => debugPrint(value));
 
     super.initState();
   }
@@ -40,24 +53,15 @@ class _HomePageState extends State<HomePage> {
     super.dispose();
   }
 
-  void loadApp() async {
-    await RemoteConfigManager.Init();
-    await FavouritesManager.Init();
-    setState(() {
-      isLoaded = true;
-      favouritesLoaded = true;
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       key: _scaffoldKey,
-      backgroundColor: Color.fromRGBO(20, 22, 22, 1),
+      appBar: MainAppBar(appBar: AppBar(), leading: Container()),
+      backgroundColor: Colors.black,
       body: SafeArea(
         child: Column(
           children: <Widget>[
-            CustomAppBar(backButton: false),
             searchSection(),
           ],
         ),
@@ -81,10 +85,12 @@ class _HomePageState extends State<HomePage> {
 
   Widget searchSection() {
     var favList = <Widget>[];
-    if (favouritesLoaded) {
+
+    if (FavouritesManager.loadedFavourites.length > 0) {
       var favourites = List<Favourite>();
-      FavouritesManager.loadedFavourites.forEach((e) => favourites
-          .add(Favourite(nickname: e.nickname, avatarUrl: e.avatarUrl)));
+      FavouritesManager.loadedFavourites.forEach((e) =>
+          favourites
+              .add(Favourite(nickname: e.nickname, avatarUrl: e.avatarUrl)));
       favourites.forEach((e) => favList.add(_buildFavouriteTile(e)));
     }
 
@@ -101,13 +107,12 @@ class _HomePageState extends State<HomePage> {
               _buildImage(),
               TextField(
                 controller: userSearchInputController,
-                decoration: InputDecoration(
-                  border: UnderlineInputBorder(),
-                  labelText: "User Nickname",
-                ),
+                decoration: InputDecoration(hintText: "Enter username here.."),
               ),
+              SizedBox(height: 15.0),
               SizedBox(
                 width: double.infinity,
+                height: 45.0,
                 child: RaisedButton(
                   child: Text(
                     "Search",
@@ -124,13 +129,11 @@ class _HomePageState extends State<HomePage> {
               ),
               SizedBox(height: 10.0),
               Container(
-                child: favouritesLoaded
-                    ? FavouritesManager.loadedFavourites.length > 0
-                        ? Column(
-                            children: favList,
-                          )
-                        : Text("No favourites!")
-                    : Text("Loading favourites..."),
+                child: FavouritesManager.loadedFavourites.length > 0
+                    ? Column(
+                        children: favList,
+                      )
+                    : Text("No favourites!"),
               ),
             ],
           ),
@@ -160,9 +163,11 @@ class _HomePageState extends State<HomePage> {
                   child: Container(
                     height: 50.0,
                     width: 50.0,
-                    child: Image.network(
-                      fav.avatarUrl,
-                      fit: BoxFit.fill,
+                    child: CachedNetworkImage(
+                      imageUrl: fav.avatarUrl,
+                      fit: BoxFit.cover,
+                      placeholder: (context, url) => LinearProgressIndicator(),
+                      errorWidget: (context, url, error) => Icon(Icons.error),
                     ),
                   ),
                 ),
@@ -196,6 +201,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future<void> searchUser({String username}) async {
+    debugPrint(isLoaded.toString());
     if (isLoaded == false) return;
 
     HapticFeedback.selectionClick();
@@ -218,8 +224,10 @@ class _HomePageState extends State<HomePage> {
     await MatchHistory.LoadNext();
     setState(() => isLoaded = true);
     HapticFeedback.vibrate();
+    adManager.regenerateAds();
     await Navigator.pushNamed(context, '/userDetails');
 
+    adManager.reset();
     // If we need to refresh the favourites, set state
     // to refresh page data
     // (Executes after coming back from userDetails page)

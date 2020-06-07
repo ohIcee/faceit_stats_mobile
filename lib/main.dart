@@ -1,4 +1,7 @@
+import 'package:faceit_stats/helpers/analytics.dart';
 import 'package:faceit_stats/pages/UserSearch/MatchDetailPage.dart';
+import 'package:faceit_stats/pages/appLoader.dart';
+import 'package:firebase_analytics/observer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -14,6 +17,13 @@ class MyApp extends StatefulWidget {
 }
 
 class _AppState extends State<MyApp> {
+
+  @override
+  void initState() {
+    analytics.Init();
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
@@ -35,12 +45,16 @@ class _AppState extends State<MyApp> {
         ),
         backgroundColor: Color.fromRGBO(35, 37, 37, 1),
       ),
-      initialRoute: '/',
+      initialRoute: '/appLoader',
       routes: {
+        AppLoaderPage.routeName: (context) => AppLoaderPage(),
         HomePage.routeName: (context) => HomePage(),
         UserDetailPage.routeName: (context) => UserDetailPage(),
         MatchDetailPage.routeName: (context) => MatchDetailPage(),
       },
+      navigatorObservers: [
+        FirebaseAnalyticsObserver(analytics: analytics.fb_analytics),
+      ],
     );
   }
 }

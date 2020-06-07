@@ -13,6 +13,7 @@ import 'package:flutter/material.dart';
 import 'package:charts_flutter/flutter.dart' as charts;
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:show_up_animation/show_up_animation.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class UserDetailsTab extends StatefulWidget {
@@ -95,145 +96,180 @@ class UserDetailsTabState extends State<UserDetailsTab> {
             Transform.translate(
               offset: Offset.fromDirection(
                   3, (currentPageValue * 200.0).clamp(0.0, 200.0)),
-              child: Text(
-                _user.nickname,
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 23.0,
-                    letterSpacing: .7),
+              child: ShowUpAnimation(
+                animationDuration: Duration(milliseconds: 500),
+                curve: Curves.fastOutSlowIn,
+                direction: Direction.vertical,
+                offset: 0.5,
+                child: Text(
+                  _user.nickname,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 23.0,
+                      letterSpacing: .7),
+                ),
               ),
             ),
             SizedBox(height: 20.0),
-            recentResults(_user.getCsgoDetails.recent_results),
+            ShowUpAnimation(
+              delayStart: Duration(milliseconds: 100),
+              animationDuration: Duration(milliseconds: 500),
+              curve: Curves.fastOutSlowIn,
+              direction: Direction.vertical,
+              offset: 0.5,
+              child: recentResults(_user.getCsgoDetails.recent_results),
+            ),
             SizedBox(height: 20.0),
-            Stack(
-              children: <Widget>[
-                SizedBox(
-                  height: 200.0,
-                  child: charts.PieChart(
-                    series,
-                    animate: false,
-                    animationDuration: chartAnimationDuration,
-                    defaultRenderer: new charts.ArcRendererConfig(
-                      arcWidth: 30,
-                      strokeWidthPx: 0.0,
-                      startAngle: 4 / 5 * pi,
-                      arcLength: 7 / 5 * pi,
+            ShowUpAnimation(
+              delayStart: Duration(milliseconds: 100),
+              animationDuration: Duration(milliseconds: 800),
+              curve: Curves.fastOutSlowIn,
+              direction: Direction.vertical,
+              offset: 0.5,
+              child: Stack(
+                children: <Widget>[
+                  SizedBox(
+                    height: 200.0,
+                    child: charts.PieChart(
+                      series,
+                      animate: false,
+                      animationDuration: chartAnimationDuration,
+                      defaultRenderer: new charts.ArcRendererConfig(
+                        arcWidth: 30,
+                        strokeWidthPx: 0.0,
+                        startAngle: 4 / 5 * pi,
+                        arcLength: 7 / 5 * pi,
+                      ),
                     ),
                   ),
-                ),
-                Positioned(
-                  bottom: 30,
-                  left: 130,
-                  child: Text(
-                    neededELO.toString(),
-                  ),
-                ),
-                Positioned.fill(
-                  child: Align(
-                    alignment: Alignment.center,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: <Widget>[
-                        Text(
-                          currentELO.toString(),
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 20.0,
-                          ),
-                        ),
-                        Text(
-                          "Rank ${rank.rank}",
-                          style: TextStyle(
-                            fontSize: 17.0,
-                          ),
-                        ),
-                      ],
+                  Positioned(
+                    bottom: 30,
+                    left: 130,
+                    child: Text(
+                      neededELO.toString(),
                     ),
                   ),
-                ),
-                Positioned(
-                  bottom: 30,
-                  right: 130,
-                  child: Text(
-                    currentELO > 2000 ? "2001+" : maxELO.toString(),
+                  Positioned.fill(
+                    child: Align(
+                      alignment: Alignment.center,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: <Widget>[
+                          Text(
+                            currentELO.toString(),
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 20.0,
+                            ),
+                          ),
+                          Text(
+                            "Rank ${rank.rank}",
+                            style: TextStyle(
+                              fontSize: 17.0,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
                   ),
-                ),
-              ],
+                  Positioned(
+                    bottom: 30,
+                    right: 130,
+                    child: Text(
+                      currentELO > 2000 ? "2001+" : maxELO.toString(),
+                    ),
+                  ),
+                ],
+              ),
             ),
             SizedBox(height: 20.0),
 
             // If there is no entries in KDHistory, don't
             // show the graph
-            KDHistory.kdr.length > 0
-                ? Column(
-                    children: <Widget>[
-                      Container(
-                        margin: EdgeInsets.symmetric(horizontal: 40.0),
-                        child: Text(
-                          "K/D History - Last ${KDHistory.maxNumMatches} matches",
-                          style: TextStyle(fontWeight: FontWeight.bold),
-                        ),
-                      ),
-                      SizedBox(height: 20.0),
-                      Container(
-                        margin: EdgeInsets.symmetric(horizontal: 40.0),
-                        height: 150.0,
-                        child: LineChart(
-                          LineChartData(
-                            titlesData: FlTitlesData(
-                              show: true,
-                              bottomTitles: SideTitles(
-                                textStyle: TextStyle(
-                                  color: Colors.white,
-                                ),
-                                showTitles: false,
-                              ),
-                              leftTitles: SideTitles(
-                                textStyle: TextStyle(
-                                  color: Colors.white,
-                                ),
-                                showTitles: true,
-                              ),
-                            ),
-                            gridData: FlGridData(
-                                show: true,
-                                drawVerticalLine: false,
-                                drawHorizontalLine: true,
-                                getDrawingHorizontalLine: (value) {
-                                  return FlLine(
-                                    color: Colors.deepOrange,
-                                    strokeWidth: 2.0,
-                                  );
-                                }),
-                            lineBarsData: <LineChartBarData>[
-                              LineChartBarData(
-                                  isCurved: true,
-                                  isStrokeCapRound: true,
-                                  belowBarData: BarAreaData(
-                                    show: true,
-                                    colors: gradientColors
-                                        .map((color) => color.withOpacity(0.3))
-                                        .toList(),
-                                  ),
-                                  spots: KDFlSpots),
-                            ],
+            ShowUpAnimation(
+              delayStart: Duration(milliseconds: 250),
+              animationDuration: Duration(milliseconds: 800),
+              curve: Curves.fastOutSlowIn,
+              direction: Direction.vertical,
+              offset: 0.5,
+              child: KDHistory.kdr.length > 0
+                  ? Column(
+                      children: <Widget>[
+                        Container(
+                          margin: EdgeInsets.symmetric(horizontal: 40.0),
+                          child: Text(
+                            "K/D History - Last ${KDHistory.maxNumMatches} matches",
+                            style: TextStyle(fontWeight: FontWeight.bold),
                           ),
                         ),
+                        SizedBox(height: 20.0),
+                        Container(
+                          margin: EdgeInsets.symmetric(horizontal: 40.0),
+                          height: 150.0,
+                          child: LineChart(
+                            LineChartData(
+                              titlesData: FlTitlesData(
+                                show: true,
+                                bottomTitles: SideTitles(
+                                  textStyle: TextStyle(
+                                    color: Colors.white,
+                                  ),
+                                  showTitles: false,
+                                ),
+                                leftTitles: SideTitles(
+                                  textStyle: TextStyle(
+                                    color: Colors.white,
+                                  ),
+                                  showTitles: true,
+                                ),
+                              ),
+                              gridData: FlGridData(
+                                  show: true,
+                                  drawVerticalLine: false,
+                                  drawHorizontalLine: true,
+                                  getDrawingHorizontalLine: (value) {
+                                    return FlLine(
+                                      color: Colors.deepOrange,
+                                      strokeWidth: 2.0,
+                                    );
+                                  }),
+                              lineBarsData: <LineChartBarData>[
+                                LineChartBarData(
+                                    isCurved: true,
+                                    isStrokeCapRound: true,
+                                    belowBarData: BarAreaData(
+                                      show: true,
+                                      colors: gradientColors
+                                          .map(
+                                              (color) => color.withOpacity(0.3))
+                                          .toList(),
+                                    ),
+                                    spots: KDFlSpots),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ],
+                    )
+                  : Container(
+                      margin: EdgeInsets.symmetric(horizontal: 40.0),
+                      child: Text(
+                        "Not enough data for K/D History",
+                        style: TextStyle(color: Colors.grey),
                       ),
-                    ],
-                  )
-                : Container(
-                    margin: EdgeInsets.symmetric(horizontal: 40.0),
-                    child: Text(
-                      "Not enough data for K/D History",
-                      style: TextStyle(color: Colors.grey),
                     ),
-                  ),
-            SizedBox(height: 20.0),
-            csgoInfo(),
+            ),
+            SizedBox(height: 40.0),
+            ShowUpAnimation(
+              delayStart: Duration(milliseconds: 250),
+              animationDuration: Duration(seconds: 1),
+              curve: Curves.fastOutSlowIn,
+              direction: Direction.vertical,
+              offset: 0.5,
+              child: csgoInfo(),
+            ),
           ],
         ),
         Positioned(
