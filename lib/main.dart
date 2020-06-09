@@ -1,6 +1,7 @@
 import 'package:faceit_stats/helpers/analytics.dart';
 import 'package:faceit_stats/pages/UserSearch/MatchDetailPage.dart';
 import 'package:faceit_stats/pages/appLoader.dart';
+import 'package:faceit_stats/pages/settings.dart';
 import 'package:firebase_analytics/observer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -28,7 +29,7 @@ class _AppState extends State<MyApp> {
   Widget build(BuildContext context) {
     SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
       statusBarColor: Color.fromRGBO(255, 85, 0, 1),
-      systemNavigationBarColor: Color.fromRGBO(20, 22, 22, 1),
+      systemNavigationBarColor: Color.fromRGBO(0, 0, 0, 0),
     ));
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.portraitUp,
@@ -49,6 +50,7 @@ class _AppState extends State<MyApp> {
       routes: {
         AppLoaderPage.routeName: (context) => AppLoaderPage(),
         HomePage.routeName: (context) => HomePage(),
+        SettingsPage.routeName: (context) => SettingsPage(),
         UserDetailPage.routeName: (context) => UserDetailPage(),
         MatchDetailPage.routeName: (context) => MatchDetailPage(),
       },

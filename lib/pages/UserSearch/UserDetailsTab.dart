@@ -202,6 +202,7 @@ class UserDetailsTabState extends State<UserDetailsTab> {
                           child: Text(
                             "K/D History - Last ${KDHistory.maxNumMatches} matches",
                             style: TextStyle(fontWeight: FontWeight.bold),
+                            textAlign: TextAlign.left,
                           ),
                         ),
                         SizedBox(height: 20.0),
@@ -336,7 +337,7 @@ class UserDetailsTabState extends State<UserDetailsTab> {
           _buildUrlIcon("assets/steam.svg", OpenSteamURL),
         ],
       ),
-      SizedBox(height: 20.0),
+      SizedBox(height: 60.0),
     ];
 
     return SizedBox(

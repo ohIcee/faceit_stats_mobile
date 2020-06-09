@@ -1,30 +1,54 @@
-import 'dart:math';
-
-import 'package:flutter_native_admob/native_admob_controller.dart';
+import 'package:firebase_admob/firebase_admob.dart';
+import 'package:gdpr_dialog/gdpr_dialog.dart';
 
 class adManager {
+  static MobileAdTargetingInfo targetingInfo;
 
-  static int _controllersToCreate = 4;
-  static var _random = new Random();
+  static BannerAd _bannerAd;
 
-  static var controllers = new List<NativeAdmobController>();
+  static Future<void> Init() async {
+    FirebaseAdMob.instance.initialize(appId: "ca-app-pub-5167276366193403~3958343265");
 
-  static void Init() {
-    regenerateAds();
+    await updateTargetingInfo();
   }
 
-  static void regenerateAds() {
-    reset();
-    for(var i = 0; i < _controllersToCreate; i++) {
-      controllers.add(new NativeAdmobController());
-    }
+  static Future<void> updateTargetingInfo() async {
+    bool consent = await GdprDialog.instance.getConsentStatus() == "PERSONALIZED" ? true : false;
+
+    targetingInfo = MobileAdTargetingInfo(
+      keywords: <String>['flutterio', 'beautiful apps'],
+      contentUrl: 'https://flutter.io',
+      childDirected: false,
+      nonPersonalizedAds: !consent,
+    );
   }
 
-  static Future<void> reset() {
-    controllers.forEach((element) => element.dispose());
-    controllers.clear();
+  static void InitBannerAd() {
+    _bannerAd = _createBannerAd();
+    loadBannerAd();
   }
 
-  static get randomController => controllers[_random.nextInt(_controllersToCreate)];
+  static BannerAd _createBannerAd() {
+    return BannerAd(
+      adUnitId: 'ca-app-pub-5167276366193403/4740660051',
+      size: AdSize.banner,
+      targetingInfo: adManager.targetingInfo,
+      listener: (MobileAdEvent event) {
+        print("BannerAd event $event");
+      },
+    );
+  }
+
+  static void loadBannerAd() {
+    _bannerAd..load();
+  }
+
+  static void disposeAds() {
+    _bannerAd.dispose();
+    _bannerAd = null;
+  }
+
+  static void SetBannerAd(BannerAd ad) => _bannerAd = ad;
+  static get bannerAd => _bannerAd;
 
 }

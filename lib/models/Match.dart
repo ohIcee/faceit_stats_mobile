@@ -1,7 +1,6 @@
 import 'package:faceit_stats/models/Faction.dart';
 import 'package:faceit_stats/models/FactionPlayer.dart';
 import 'package:faceit_stats/models/PlayerMatchStats.dart';
-import 'package:flutter/material.dart';
 
 class Match {
   final String match_id;

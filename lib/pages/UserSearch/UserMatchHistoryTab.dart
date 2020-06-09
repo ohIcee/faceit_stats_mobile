@@ -1,14 +1,13 @@
 import 'package:faceit_stats/api/MatchHistory.dart';
-import 'package:faceit_stats/helpers/adManager.dart';
 import 'package:faceit_stats/helpers/enums.dart';
+import 'package:faceit_stats/helpers/page_transition.dart';
 import 'package:faceit_stats/models/Faction.dart';
 import 'package:faceit_stats/models/Match.dart';
 import 'package:faceit_stats/models/user.dart';
+import 'package:faceit_stats/pages/UserSearch/MatchDetailPage.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_native_admob/flutter_native_admob.dart';
-import 'package:flutter_native_admob/native_admob_options.dart';
 import 'package:time_formatter/time_formatter.dart';
 import 'package:intl/intl.dart';
 
@@ -25,6 +24,11 @@ class UserMatchHistoryTabState extends State<UserMatchHistoryTab> {
   final matchHistoryListKey = PageStorageKey('MatchHistoryList');
   User _user;
   bool isLoadingMatches = false;
+
+  @override
+  void initState() {
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -182,23 +186,14 @@ class UserMatchHistoryTabState extends State<UserMatchHistoryTab> {
 
   void showMatchDetails(String matchID) {
     HapticFeedback.vibrate();
-    Navigator.pushNamed(context, '/matchDetails', arguments: matchID);
-  }
 
-  Widget _buildAd() {
-    return NativeAdmob(
-      controller: adManager.randomController,
-      adUnitID: "ca-app-pub-3940256099942544/2247696110",
-      loading: LinearProgressIndicator(),
-      options: NativeAdmobOptions(
-        adLabelTextStyle: NativeTextStyle(color: Colors.black),
-        headlineTextStyle: NativeTextStyle(color: Colors.white),
-        ratingColor: Colors.white,
-        advertiserTextStyle: NativeTextStyle(color: Colors.white),
-        bodyTextStyle: NativeTextStyle(color: Colors.white),
-        callToActionStyle: NativeTextStyle(color: Colors.white),
-        priceTextStyle: NativeTextStyle(color: Colors.white),
-        storeTextStyle: NativeTextStyle(color: Colors.white),
+    //Navigator.pushNamed(context, '/matchDetails', arguments: matchID);
+    Navigator.push(
+      context,
+      PageTransition(
+        type: PageTransitionType.fade,
+        duration: Duration(milliseconds: 400),
+        child: MatchDetailPage(matchID: matchID),
       ),
     );
   }
@@ -219,7 +214,7 @@ class UserMatchHistoryTabState extends State<UserMatchHistoryTab> {
           return Container(
             height: 50.0,
             margin: EdgeInsets.only(
-              bottom: 20.0,
+              bottom: 70.0,
             ),
             child: _buildMatchHistoryLoader(),
           );
@@ -227,14 +222,16 @@ class UserMatchHistoryTabState extends State<UserMatchHistoryTab> {
           var match = MatchHistory.loadedMatches[index];
 
           if (index != 0 && index % 4 == 0) {
+
             // show ad
             return Column(
               children: <Widget>[
-                Container(
-                    height: 200.0,
-                    color: Colors.white10.withOpacity(.05),
-                    child: _buildAd()),
-                SizedBox(height: 10.0),
+//                Container(
+//                  height: 200.0,
+//                  color: Colors.white10.withOpacity(.05),
+//                  child: _buildAd(),
+//                ),
+//                SizedBox(height: 10.0),
                 _buildMatchHistoryCard(match),
               ],
             );

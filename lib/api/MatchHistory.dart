@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:faceit_stats/helpers/enums.dart';
 import 'package:faceit_stats/models/KDHistory.dart';
-import 'package:flutter/foundation.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart' as http;
 
 import 'package:faceit_stats/models/Match.dart';
@@ -26,11 +26,14 @@ class MatchHistory {
   static Future<List<Match>> LoadNext() async {
     currentUser = PlayerSearch.currentSearchedUser;
 
+    var offset = _numMatchesLoaded == 0 ? 0.toString() : _numMatchesLoaded.toString();
+    var limit = _numMatchesLoaded.toString();
+
     var queryParams = {
       "nickname": currentUser.userID.toString(),
       "game": "csgo",
-      "offset": _numMatchesLoaded == 0 ? 20.toString() : (_numMatchesLoaded * 2).toString(),
-      "limit": _numMatchesLoaded.toString(),
+      "offset": offset,
+      "limit": limit,
       "from": "1546300800"
     };
 
@@ -69,6 +72,7 @@ class MatchHistory {
         }
       ),
     );
+    _numMatchesLoaded += matchesJSON.length;
 
     List<Map<String, dynamic>> matchesDetails =
         new List<Map<String, dynamic>>();
@@ -95,7 +99,6 @@ class MatchHistory {
     }
 
     lastAPIResponse = API_RESPONSES.SUCCESS_RETRIEVE;
-    _numMatchesLoaded += matchesJSON.length;
     return newMatches;
   }
 }

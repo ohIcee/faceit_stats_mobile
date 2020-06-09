@@ -1,5 +1,3 @@
-import 'dart:collection';
-
 class MapStats {
   final String label;
   final String matches;

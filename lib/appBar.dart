@@ -13,6 +13,7 @@ class MainAppBar extends StatelessWidget implements PreferredSizeWidget {
       backgroundColor: Color.fromRGBO(255, 85, 0, 1),
       centerTitle: true,
       leading: leading,
+      actions: widgets,
       title: Text(
         "FACEIT STATS",
         style: TextStyle(

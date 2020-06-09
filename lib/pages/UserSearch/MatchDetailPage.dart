@@ -11,8 +11,9 @@ import 'package:show_up_animation/show_up_animation.dart';
 
 class MatchDetailPage extends StatefulWidget {
   static const routeName = '/matchDetails';
+  String matchID = "";
 
-  MatchDetailPage({Key key}) : super(key: key);
+  MatchDetailPage({Key key, this.matchID}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() => _MatchDetailPageState();
@@ -26,7 +27,12 @@ class _MatchDetailPageState extends State<MatchDetailPage> {
 
   @override
   Widget build(BuildContext context) {
-    _matchID = ModalRoute.of(context).settings.arguments;
+    if (widget.matchID == null) {
+      _matchID = ModalRoute
+          .of(context)
+          .settings
+          .arguments;
+    } else { _matchID = widget.matchID; }
     if (_user == null) _user = MatchHistory.currentUser;
     if (_match == null) _match = MatchHistory.getMatchByID(_matchID);
 

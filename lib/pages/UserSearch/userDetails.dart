@@ -5,6 +5,7 @@ import 'package:faceit_stats/models/user.dart';
 import 'package:faceit_stats/pages/UserSearch/UserDetailsTab.dart';
 import 'package:faceit_stats/pages/UserSearch/UserMapStatsTab.dart';
 import 'package:faceit_stats/pages/UserSearch/UserMatchHistoryTab.dart';
+import 'package:faceit_stats/helpers/adManager.dart';
 
 import 'package:flutter/material.dart';
 
@@ -30,6 +31,11 @@ class _UserDetailPageState extends State<UserDetailPage>
   @override
   void initState() {
     super.initState();
+
+    adManager.bannerAd..show(
+      anchorOffset: 10.0
+    );
+
     _user = MatchHistory.currentUser;
     pageViewController.addListener(() {
       setState(() {
@@ -73,7 +79,7 @@ class _UserDetailPageState extends State<UserDetailPage>
   Widget topInfo() {
     return AnimatedContainer(
       duration: Duration(milliseconds: 1000),
-      height: ((1 - currentPageValue) * 200.0).clamp(100.0, 165.0),
+      height: ((1 - currentPageValue) * 200.0).clamp(105.0, 165.0),
       curve: Curves.easeOutCubic,
       child: Stack(
         children: <Widget>[

@@ -3,7 +3,6 @@ import 'package:faceit_stats/helpers/RemoteConfigManager.dart';
 import 'package:faceit_stats/helpers/adManager.dart';
 import 'package:faceit_stats/helpers/page_transition.dart';
 import 'package:faceit_stats/pages/home.dart';
-import 'package:flare_splash_screen/flare_splash_screen.dart';
 import 'package:flutter/material.dart';
 
 class AppLoaderPage extends StatefulWidget {
@@ -17,16 +16,20 @@ class AppLoaderPage extends StatefulWidget {
 }
 
 class _AppLoaderPageState extends State<AppLoaderPage> {
-  var isLoaded = false;
-
   void loadApp() async {
     await RemoteConfigManager.Init();
     await FavouritesManager.Init();
     await adManager.Init();
+    adManager.InitBannerAd();
 
-    setState(() {
-      isLoaded = true;
-    });
+    Navigator.pushReplacement(
+      context,
+      PageTransition(
+        type: PageTransitionType.fade,
+        duration: Duration(milliseconds: 500),
+        child: HomePage(),
+      ),
+    );
   }
 
   @override
@@ -37,25 +40,6 @@ class _AppLoaderPageState extends State<AppLoaderPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      child: SplashScreen.callback(
-        name: 'assets/faceit_splash.flr',
-        startAnimation: 'play_test',
-        endAnimation: 'idle',
-        backgroundColor: Colors.black,
-        onSuccess: (a) {
-          Navigator.pushReplacement(
-            context,
-            PageTransition(
-              type: PageTransitionType.fade,
-              duration: Duration(milliseconds: 500),
-              child: HomePage(),
-            ),
-          );
-        },
-        onError: (a, b) => {},
-        isLoading: !isLoaded,
-      ),
-    );
+    return Container();
   }
 }

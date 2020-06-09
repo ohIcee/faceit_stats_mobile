@@ -1,6 +1,5 @@
 import 'package:faceit_stats/api/MatchHistory.dart';
 import 'package:faceit_stats/models/KDHistory.dart';
-import 'package:flutter/material.dart';
 
 class PlayerMatchStats {
   final String player_id;

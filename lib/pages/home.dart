@@ -11,10 +11,9 @@ import 'package:flutter/services.dart';
 
 import 'package:faceit_stats/api/PlayerSearch.dart';
 import 'package:faceit_stats/api/MatchHistory.dart';
-import 'package:gdpr_dialog/gdpr_dialog.dart';
 
 class HomePage extends StatefulWidget {
-  static const routeName = '/';
+  static const routeName = '/home';
 
   HomePage({Key key, this.title}) : super(key: key);
   final String title;
@@ -31,19 +30,7 @@ class _HomePageState extends State<HomePage> {
 
   @override
   void initState() {
-    // ask for advertisement consent
-    GdprDialog.instance
-        .showDialog(
-            'pub-2111344032223404', 'https://plus1s.com/privacy-policy/',
-            isForTest: true, testDeviceId: 'ab')
-        .then((onValue) {
-      if (onValue) {
-        analytics.fb_analytics.setAnalyticsCollectionEnabled(onValue);
-      }
-    });
-
-    GdprDialog.instance.getConsentStatus().then((value) => debugPrint(value));
-
+    analytics.requestConsent();
     super.initState();
   }
 
@@ -57,7 +44,17 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       key: _scaffoldKey,
-      appBar: MainAppBar(appBar: AppBar(), leading: Container()),
+      appBar: MainAppBar(
+        appBar: AppBar(),
+        leading: Container(),
+        widgets: <Widget>[
+          IconButton(
+            icon: Icon(Icons.settings),
+            color: Colors.white,
+            onPressed: () => Navigator.pushNamed(context, '/settings'),
+          )
+        ],
+      ),
       backgroundColor: Colors.black,
       body: SafeArea(
         child: Column(
@@ -88,9 +85,8 @@ class _HomePageState extends State<HomePage> {
 
     if (FavouritesManager.loadedFavourites.length > 0) {
       var favourites = List<Favourite>();
-      FavouritesManager.loadedFavourites.forEach((e) =>
-          favourites
-              .add(Favourite(nickname: e.nickname, avatarUrl: e.avatarUrl)));
+      FavouritesManager.loadedFavourites.forEach((e) => favourites
+          .add(Favourite(nickname: e.nickname, avatarUrl: e.avatarUrl)));
       favourites.forEach((e) => favList.add(_buildFavouriteTile(e)));
     }
 
@@ -221,13 +217,16 @@ class _HomePageState extends State<HomePage> {
       });
       return;
     }
+    adManager.InitBannerAd();
+
     await MatchHistory.LoadNext();
     setState(() => isLoaded = true);
     HapticFeedback.vibrate();
-    adManager.regenerateAds();
+
     await Navigator.pushNamed(context, '/userDetails');
 
-    adManager.reset();
+    adManager.disposeAds();
+
     // If we need to refresh the favourites, set state
     // to refresh page data
     // (Executes after coming back from userDetails page)

@@ -62,8 +62,10 @@ class UserMapStatsTabState extends State<UserMapStatsTab> {
   Widget _buildMapStats() {
     return ListView.builder(
       key: mapStatsListKey,
-      padding: EdgeInsets.symmetric(
-        horizontal: 20.0,
+      padding: EdgeInsets.only(
+        left: 20.0,
+        right: 20.0,
+        bottom: 60.0
       ),
       itemCount: _user.getCsgoDetails.map_stats.length,
       physics: BouncingScrollPhysics(),

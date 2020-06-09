@@ -1,6 +1,5 @@
 import 'package:faceit_stats/models/FactionPlayer.dart';
 import 'package:faceit_stats/models/PlayerMatchStats.dart';
-import 'package:flutter/material.dart';
 
 class Faction {
   final int faction_num;
