@@ -99,6 +99,7 @@ class _SettingsPageState extends State<SettingsPage> {
   }
 
   void requestAndRetrieveConsent() async {
+    await analytics.resetConsent();
     var consent = await analytics.requestConsent();
 
     adManager.updateTargetingInfo();

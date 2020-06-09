@@ -4,7 +4,6 @@ import 'package:faceit_stats/models/Faction.dart';
 import 'package:faceit_stats/models/PlayerMatchStats.dart';
 import 'package:faceit_stats/models/user.dart';
 import 'package:faceit_stats/appBar.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:show_up_animation/show_up_animation.dart';

@@ -7,7 +7,6 @@ import 'package:faceit_stats/models/CsgoDetails.dart';
 import 'package:faceit_stats/models/KDHistory.dart';
 import 'package:faceit_stats/models/user.dart';
 import 'package:fl_chart/fl_chart.dart';
-import 'package:flutter/cupertino.dart';
 
 import 'package:flutter/material.dart';
 import 'package:charts_flutter/flutter.dart' as charts;

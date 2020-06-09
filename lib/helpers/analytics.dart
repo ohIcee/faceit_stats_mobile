@@ -1,5 +1,5 @@
+import 'package:faceit_stats/helpers/adManager.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:gdpr_dialog/gdpr_dialog.dart';
 
 class analytics {
@@ -12,10 +12,7 @@ class analytics {
   static Future<bool> requestConsent() async {
     var consented = false;
 
-    debugPrint("REQUESTING");
-
     // ask for advertisement consent
-    GdprDialog.instance.setConsentToUnknown();
     await GdprDialog.instance
         .showDialog(
       'pub-2111344032223404',
@@ -29,6 +26,11 @@ class analytics {
     });
 
     return consented;
+  }
+
+  static Future<void> resetConsent() async {
+    await GdprDialog.instance.setConsentToUnknown();
+    adManager.updateTargetingInfo();
   }
 
 }

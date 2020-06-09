@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'dart:io';
-import 'package:flutter/cupertino.dart';
 import 'package:path_provider/path_provider.dart';
 
 import 'package:faceit_stats/models/Favourite.dart';
@@ -27,7 +26,6 @@ class FavouritesManager {
     }
 
     await loadFavourites();
-    debugPrint("Loaded favourites!");
   }
 
   static Future<String> get _localPath async {
@@ -66,14 +64,12 @@ class FavouritesManager {
 
   static Future<void> Clear() async {
     await file.writeAsString('');
-    debugPrint("CLEARED");
   }
 
   static Future<void> loadFavourites() async {
     // READ FAVOURITES AND DECODE THEM
     var content = await readFavouriteRaw();
     if (content == "" || content == null) {
-      debugPrint("Nothing to load.");
       return;
     }
     var decoded = jsonDecode(content);
@@ -92,7 +88,6 @@ class FavouritesManager {
     // READ FAVOURITES AND DECODE THEM
     var content = await readFavouriteRaw();
     if (content == "" || content == null) {
-      debugPrint("Nothing to remove.");
       return;
     }
     var decoded = jsonDecode(content);

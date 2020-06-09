@@ -1,7 +1,6 @@
 import 'package:faceit_stats/api/MatchHistory.dart';
 import 'package:faceit_stats/models/MapStats.dart';
 import 'package:faceit_stats/models/user.dart';
-import 'package:flutter/cupertino.dart';
 
 import 'package:flutter/material.dart';
 
