@@ -121,6 +121,7 @@ class _MatchDetailPageState extends State<MatchDetailPage> {
               _buildFactionInfo(_match.factions[0]),
               SizedBox(height: 10.0),
               _buildFactionInfo(_match.factions[1]),
+              SizedBox(height: 40.0),
             ],
           ),
         ),
