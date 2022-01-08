@@ -34,8 +34,8 @@ class _AppLoaderPageState extends State<AppLoaderPage> {
 
   @override
   void initState() {
-    super.initState();
     loadApp();
+    super.initState();
   }
 
   @override

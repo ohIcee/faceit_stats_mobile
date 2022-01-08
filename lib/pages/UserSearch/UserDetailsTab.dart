@@ -11,6 +11,7 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:charts_flutter/flutter.dart' as charts;
 import 'package:flutter/services.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:show_up_animation/show_up_animation.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -212,10 +213,16 @@ class UserDetailsTabState extends State<UserDetailsTab> {
                               titlesData: FlTitlesData(
                                 show: true,
                                 bottomTitles: SideTitles(
-                                  getTextStyles: (context, value) => TextStyle(
+                                  textStyle: TextStyle(
                                     color: Colors.white,
                                   ),
-                                  showTitles: false
+                                  showTitles: false,
+                                ),
+                                leftTitles: SideTitles(
+                                  textStyle: TextStyle(
+                                    color: Colors.white,
+                                  ),
+                                  showTitles: true,
                                 ),
                               ),
                               gridData: FlGridData(
@@ -360,7 +367,7 @@ class UserDetailsTabState extends State<UserDetailsTab> {
           vertical: 10.0,
           horizontal: 10.0,
         ),
-        child: Image.asset(
+        child: SvgPicture.asset(
           svgIconPath,
           height: 30.0,
           width: 30.0,
