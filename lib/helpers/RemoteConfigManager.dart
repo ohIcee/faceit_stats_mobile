@@ -6,8 +6,7 @@ class RemoteConfigManager {
 
   static Future<bool> Init() async {
     _remoteConfig = await RemoteConfig.instance;
-    await _remoteConfig.fetch(expiration: Duration(hours: 1));
-    await _remoteConfig.activateFetched();
+    await _remoteConfig.fetchAndActivate();
     print("Loaded remote config!");
     return true;
   }
